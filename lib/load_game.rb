@@ -1,10 +1,9 @@
 require 'pry-byebug'
 
-class Pieces
+class LoadGame
   NEW_GAME = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'.freeze
-  # NEW_GAME = '1B6/2n5/p1N1P2R/P1K3N1/4Pk2/1Q2p2p/6nP/1B4R1 w - - 0 1'
 
-  attr_accessor :matrix_notation
+  attr_accessor :matrix_notation, :to_play, :can_castle, :en_passant, :halfmove_clock, :fullmove_num
 
   def initialize(fen_code = NEW_GAME)
     fen_notation = split_fen(fen_code)

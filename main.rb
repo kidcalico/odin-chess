@@ -1,5 +1,8 @@
 require 'rubocop'
 require 'pry-byebug'
-require_relative 'lib/board'
+require_relative 'lib/game'
 
-test = Board.new
+test = Game.new
+
+test.board.print_board_white
+test.board.print_board_black
