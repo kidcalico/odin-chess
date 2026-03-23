@@ -34,11 +34,9 @@ class LoadGame
   def num_to_empties(matrix)
     matrix.map do |rank|
       rank.map do |square|
-        if /^[1-8]$/.match?(square)
-          [nil] * square.to_i
-        else
-          square
-        end
+        next [nil] * square.to_i if /^[1-8]$/.match?(square)
+
+        square
       end.flatten
     end
   end
