@@ -1,5 +1,4 @@
 require 'pry-byebug'
-require_relative 'piece'
 
 class LoadGame
   NEW_GAME = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'.freeze
@@ -36,7 +35,7 @@ class LoadGame
     matrix.map do |rank|
       rank.map do |square|
         if /^[1-8]$/.match?(square)
-          [' '] * square.to_i
+          [nil] * square.to_i
         else
           square
         end
@@ -44,6 +43,3 @@ class LoadGame
     end
   end
 end
-
-test = LoadGame.new
-p test.matrix_notation

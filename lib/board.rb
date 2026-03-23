@@ -1,7 +1,7 @@
 require_relative 'board_colors'
 require_relative 'load_game'
-require_relative 'square'
-# require_relative 'pieces'
+require_relative 'piece'
+
 # •
 # BULLET
 # Unicode: U+2022, UTF-8: E2 80 A2
@@ -11,16 +11,14 @@ class Board
 
   attr_accessor :board, :game_stats
 
-  def initialize
-    @game = LoadGame.new
-    @board = @game.matrix_notation
-    @game_stats = @game.game_stats
+  def initialize(board_array)
+    @board = build_board(board_array)
   end
 
-  def build_board
-    @board = @board.map.with_index do |rank, r_index|
+  def build_board(board_array)
+    board_array = board_array.map.with_index do |rank, r_index|
       rank.map.with_index do |file, f_index|
-        file = Piece.new(file, [r_index, f_index]) if file != ' '
+        file = Piece.new(file, [r_index, f_index]) unless file.nil?
       end
     end
   end
@@ -31,7 +29,7 @@ class Board
       print_ready.each_with_index { |pieces, rank| print_rank(8 - rank, pieces, color) }
       print "   a  b  c  d  e  f  g  h\n"
     else
-      @board.reverse.each_with_index { |pieces, rank| print_rank(rank + 1, pieces, color) }
+      print_ready.reverse.each_with_index { |pieces, rank| print_rank(rank + 1, pieces, color) }
       print "   h  g  f  e  d  c  b  a\n"
     end
   end
@@ -76,14 +74,3 @@ class Board
     end
   end
 end
-
-test = Board.new
-# p test.algebraic_board
-# test.print_board('w')
-p test.build_board
-p test.board[3][2].symbol
-p test.board[3][2].legal_moves
-p test.board[7][3].symbol
-p test.board[0][0].class == Piece
-test.print_board('w')
-p test.game_stats[:en_passant]

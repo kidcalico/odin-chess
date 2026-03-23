@@ -4,42 +4,37 @@ require_relative 'load_game'
 require_relative 'player'
 
 class Game
-  attr_accessor :board
+  attr_accessor :board, :game_stats
 
   def initialize
-    @game = Board.new
-    load_stats(@game)
-    # binding.pry
-    # @white = Player.new('w', @piece_matrix)
-    # @black = Player.new('b', @piece_matrix)
-    # check_status?(@turn)
-    # play_game
+    @game = LoadGame.new
+    @board = Board.new(@game.matrix_notation)
+    @game_stats = @game.game_stats
+    load_stats
   end
 
-  def load_stats(game)
-    @piece_matrix = @game.board
-    @turn = @game.game_stats.turn
-    @castle = @game.game_stats.castle
-    @en_passant = @game.game_stats.en_passant
-    @half_moves = @game.game_stats.half_moves
-    @full_moves = @game.game_stats.full_moves
+  def load_stats
+    @turn = @game_stats[:turn]
+    @castle = @game_stats[:castle]
+    @en_passant = @game_stats[:en_passant]
+    @half_moves = @game_stats[:half_moves]
+    @full_moves = @game_stats[:full_moves]
   end
 
   def play_game
-    # unless @check_status(@to_play) == 'Checkmate'
-    #   move(@to_play)
-    # end
   end
 
   def move(color)
-    # get input and make move (call Player)
-    # change turn to other color
-    # print board
   end
 
-  def check_status(color)
-    @check = false
+  def check?(color)
+  end
+
+  def checkmate?(color)
   end
 end
 
-Game.new
+test = Game.new
+test.board.print_board('b')
+p test.board.board[7][3].symbol
+p test.board.board[1][0].legal_moves
