@@ -1,3 +1,4 @@
+require 'pry-byebug'
 require_relative 'board'
 require_relative 'load_game'
 require_relative 'player'
@@ -5,24 +6,23 @@ require_relative 'player'
 class Game
   attr_accessor :board
 
-  def initialize(game = LoadGame.new)
-    @game = game
+  def initialize
+    @game = Board.new
     load_stats(@game)
-    @board = Board.new(@piece_matrix)
-    @white = Player.new('w', @piece_matrix)
-    @black = Player.new('b', @piece_matrix)
+    # binding.pry
+    # @white = Player.new('w', @piece_matrix)
+    # @black = Player.new('b', @piece_matrix)
     # check_status?(@turn)
     # play_game
   end
 
   def load_stats(game)
-    @piece_matrix = @game.matrix_notation
-    @to_play = @white if game.to_play == 'w'
-    @to_play = @black if game.to_play == 'b'
-    @castle = game.can_castle
-    @en_passant = game.en_passant
-    @halfmove_clock = game.halfmove_clock
-    @fullmove_num = game.fullmove_num
+    @piece_matrix = @game.board
+    @turn = @game.game_stats.turn
+    @castle = @game.game_stats.castle
+    @en_passant = @game.game_stats.en_passant
+    @half_moves = @game.game_stats.half_moves
+    @full_moves = @game.game_stats.full_moves
   end
 
   def play_game
@@ -41,3 +41,5 @@ class Game
     @check = false
   end
 end
+
+Game.new

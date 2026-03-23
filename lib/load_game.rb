@@ -1,22 +1,21 @@
 require 'pry-byebug'
+require_relative 'piece'
 
 class LoadGame
   NEW_GAME = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'.freeze
+  SAVED_GAME = 'rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2'
 
-  attr_accessor :matrix_notation, :to_play, :can_castle, :en_passant, :halfmove_clock, :fullmove_num
+  attr_accessor :matrix_notation, :game_stats, :fen_notation
 
-  def initialize(fen_code = NEW_GAME)
-    fen_notation = split_fen(fen_code)
-    @matrix_notation = fen_to_matrix(fen_notation[0])
-    @to_play = fen_notation[1]
-    @can_castle = fen_notation[2]
-    @en_passant = fen_notation[3]
-    @halfmove_clock = fen_notation[4]
-    @fullmove_num = fen_notation[5]
+  def initialize(fen_code = SAVED_GAME)
+    @fen_notation = split_fen(fen_code)
+    @matrix_notation = fen_to_matrix(@fen_notation[0])
+    load_stats
   end
 
-  def whose_turn
-    @to_play = @fen_notation[1]
+  def load_stats
+    @game_stats = { turn: @fen_notation[1], castle: @fen_notation[2], en_passant: @fen_notation[3],
+                    half_moves: @fen_notation[4], full_moves: @fen_notation[5] }
   end
 
   def split_fen(fen_code)
@@ -26,22 +25,25 @@ class LoadGame
   end
 
   def fen_to_matrix(fen_code)
-    board_state = []
+    result = []
     fen_code.each_index do |rank|
-      board_state << fen_code[rank].split('')
+      result << fen_code[rank].split('')
     end
-    num_to_empties(board_state)
+    num_to_empties(result)
   end
 
   def num_to_empties(matrix)
-    board_state = []
-    matrix.each_index do |rank|
-      board_state << []
-      matrix[rank].each do |file|
-        file.to_i.times { board_state[rank] << ' ' } if /^[1-8]$/.match?(file)
-        board_state[rank] << file unless /^[1-8]$/.match?(file)
-      end
+    matrix.map do |rank|
+      rank.map do |square|
+        if /^[1-8]$/.match?(square)
+          [' '] * square.to_i
+        else
+          square
+        end
+      end.flatten
     end
-    board_state
   end
 end
+
+test = LoadGame.new
+p test.matrix_notation
