@@ -8,13 +8,13 @@ class LoadGame
 
   def initialize(fen_code = SAVED_GAME)
     @fen_notation = split_fen(fen_code)
-    @matrix_notation = fen_to_matrix(@fen_notation[0])
-    load_stats
+    @matrix_notation = fen_to_matrix(fen_notation[0])
+    @game_stats = load_stats
   end
 
   def load_stats
-    @game_stats = { turn: @fen_notation[1], castle: @fen_notation[2], en_passant: @fen_notation[3],
-                    half_moves: @fen_notation[4], full_moves: @fen_notation[5] }
+    { turn: fen_notation[1], castle: fen_notation[2], en_passant: fen_notation[3],
+      half_moves: fen_notation[4], full_moves: fen_notation[5] }
   end
 
   def split_fen(fen_code)

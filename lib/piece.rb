@@ -1,5 +1,5 @@
 class Piece
-  attr_reader :symbol, :color
+  attr_reader :color, :type, :symbol, :location
 
   def initialize(type, location)
     @color = which_color(type)
@@ -9,11 +9,9 @@ class Piece
   end
 
   def which_color(type)
-    if type.ord < 91
-      'white'
-    else
-      'black'
-    end
+    return 'white' if type == type.upcase
+
+    'black'
   end
 
   def which_type(type)
@@ -39,7 +37,7 @@ class Piece
   end
 
   def legal_moves
-    case @type
+    case type
     when 'pawn' then pawn_moves
     when 'knight' then knight_moves
     when 'bishop' then bishop_moves
@@ -53,22 +51,19 @@ class Piece
 
   def pawn_moves
     result = []
-    if @location[0] == 6 && @color == 'white'
-      result.push([@location[0] - 1, @location[1]],
-                  [@location[0] - 2, @location[1]])
-    elsif @location[0] == 1 && @color == 'black'
-      result.push([@location[0] + 1, @location[1]],
-                  [@location[0] + 2, @location[1]])
-    elsif @color == 'white'
-      result = [@location[0] - 1, @location[1]]
-    elsif @color == 'black'
-      result = [@location[0] + 1, @location[1]]
+    if location[0] == 6 && color == 'white'
+      result.push([location[0] - 1, location[1]],
+                  [location[0] - 2, location[1]])
+    elsif location[0] == 1 && color == 'black'
+      result.push([location[0] + 1, location[1]],
+                  [location[0] + 2, location[1]])
+    elsif color == 'white'
+      result = [location[0] - 1, location[1]]
+    elsif color == 'black'
+      result = [location[0] + 1, location[1]]
     end
     # add attack conditions, limit results to board coordinates and occupied squares for non attacks
     result
-  end
-
-  def knight_moves
   end
 
   def knight_moves(square)

@@ -24,7 +24,7 @@ class Board
   end
 
   def print_board(color)
-    print_ready = array_print_ready(@board)
+    print_ready = array_print_ready(board)
     if color == 'w'
       print_ready.each_with_index { |pieces, rank| print_rank(8 - rank, pieces, color) }
       print "   a  b  c  d  e  f  g  h\n"
