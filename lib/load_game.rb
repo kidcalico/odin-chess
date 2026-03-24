@@ -2,13 +2,14 @@ require 'pry-byebug'
 
 class LoadGame
   NEW_GAME = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'.freeze
-  SAVED_GAME = 'rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2'
+  TEST_GAME = '1r6/5pp1/R1R4p/1r1pP3/2pkQPP1/7P/1P6/2K5 w - - 0 41'
+  SAVED_GAME = 'r1bqkbnr/ppp2ppp/2np4/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4'
 
   attr_accessor :matrix_notation, :game_stats, :fen_notation
 
-  def initialize(fen_code = SAVED_GAME)
-    @fen_notation = split_fen(fen_code)
-    @matrix_notation = fen_to_matrix(fen_notation[0])
+  def initialize(fen_code = TEST_GAME)
+    @fen_notation = fen_to_array(fen_code)
+    # @matrix_notation = fen_to_matrix(fen_notation[0])
     @game_stats = load_stats
   end
 
@@ -17,18 +18,10 @@ class LoadGame
       half_moves: fen_notation[4], full_moves: fen_notation[5] }
   end
 
-  def split_fen(fen_code)
+  def fen_to_array(fen_code)
     all_pieces = fen_code.split(' ')
-    all_pieces[0] = all_pieces[0].split('/')
+    all_pieces[0] = num_to_empties(all_pieces[0].split('/').map { |block| block.split('') })
     all_pieces
-  end
-
-  def fen_to_matrix(fen_code)
-    result = []
-    fen_code.each_index do |rank|
-      result << fen_code[rank].split('')
-    end
-    num_to_empties(result)
   end
 
   def num_to_empties(matrix)
