@@ -1,20 +1,42 @@
 require 'pry-byebug'
 require_relative 'board'
-require_relative 'load_game'
 require_relative 'player'
 
 class Game
   NEW_GAME = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'.freeze
   TEST_GAME = '1r6/5pp1/R1R4p/1r1pP3/2pkQPP1/7P/1P6/2K5 w - - 0 41'
-  # SAVED_GAME = 'r1bqkbnr/ppp2ppp/2np4/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4'
+  SAVED_GAME = 'r1bqkbnr/ppp2ppp/2np4/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4'
 
-  attr_accessor :game, :game_stats, :board_array, :board
+  include Moveable
 
-  def initialize(fen_code = TEST_GAME)
+  attr_accessor :game_array, :game_stats, :board, :white, :black
+
+  def initialize(fen_code = SAVED_GAME)
     @game_array = load_fen(fen_code)
-    @board_array = @game[0]
-    @board = Board.new(board_array)
+    @board = Board.new(game_array[0])
     @game_stats = load_stats
+    @white = Player.new('w')
+    @black = Player.new('b')
+  end
+
+  # def test
+  #   move = white.get_input('piece')
+  #   possible_moves(move, board.board, 'white')
+  # end
+
+  def play_game
+    until checkmate?(game_stats[:turn]) == true
+      check_prompt if check?(game_stats[:turn]) == true
+
+      if game_stats[:turn] == 'w'
+        board.print_board('w')
+        white.turn(board)
+      else
+        board.print_board('b')
+        black.turn(board)
+      end
+    end
+    end_game
   end
 
   def load_fen(fen_code)
@@ -24,8 +46,8 @@ class Game
   end
 
   def load_stats
-    { turn: game[1], castle: game[2], en_passant: game[3],
-      half_moves: game[4], full_moves: game[5] }
+    { turn: game_array[1], castle: game_array[2], en_passant: game_array[3],
+      half_moves: game_array[4], full_moves: game_array[5] }
   end
 
   def num_to_empties(fen_code)
@@ -38,22 +60,18 @@ class Game
     end
   end
 
-  def play_game
-  end
-
-  def move(color)
-  end
-
   def check?(color)
   end
 
   def checkmate?(color)
   end
+
+  def end_game
+  end
 end
 
 test = Game.new
 
-p test.board_array
-p test.board
 test.board.print_board('w')
 p test.game_stats
+# p test.test
