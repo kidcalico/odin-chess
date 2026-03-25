@@ -17,17 +17,27 @@ class Player
   end
 
   def turn(board_array)
-    possible_moves(get_input('piece'))
+    possible_moves(get_input('piece'), board_array)
     # print possible moves
     get_input('move')
     # make move, end turn
   end
 
   def get_input(target)
-    print "Where is the piece that you'd like to move? " if target == 'piece'
-    print 'Where would you like to move? ' if target == 'move'
-    algebraic = gets.chomp until !algebraic.nil? && algebraic.length == 2
+    algebraic = nil
+    loop do
+      print "Where is the piece that you'd like to move? " if target == 'piece'
+      print 'Where would you like to move? ' if target == 'move'
+      algebraic = gets.chomp
+      break if input_valid?(algebraic)
+    end
     algebraic_to_coord(algebraic)
+  end
+
+  def input_valid?(input)
+    return true if input.length == 2 && input[0].match?(/[a-h]/i) && input[1].match?(/^[1-8]$/)
+
+    false
   end
 
   def algebraic_to_coord(algebraic)
@@ -39,21 +49,3 @@ class Player
     piece = board_array[coord[0]][coord[1]]
   end
 end
-
-# test = Player.new('w')
-# p test.algebraic_to_coord('g5')
-# p test.get_input
-
-# def legal_moves(rank, square)
-#   case @board_array[rank][square]
-#   when 'P' then pawn_moves(rank, square)
-#   when 'N' then knight_moves(rank, square)
-#   when 'B' then bishop_moves(rank, square)
-#   when 'R' then rook_moves(rank, square)
-#   when 'Q' then queen_moves(rank, square)
-#   when 'K' then king_moves(rank, square)
-#   end
-# end
-
-# def pawn_moves(rank, square)
-# end
