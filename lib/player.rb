@@ -3,10 +3,11 @@ require_relative 'moveable'
 class Player
   include Moveable
 
-  attr_accessor :color, :captured
+  attr_accessor :color, :opponent, :captured
 
   def initialize(color)
     @color = set_color(color)
+    @opponent = set_opponent(color)
     @captured = []
   end
 
@@ -16,11 +17,10 @@ class Player
     'black'
   end
 
-  def turn(board_array)
-    possible_moves(get_input('piece'), board_array)
-    # print possible moves
-    get_input('move')
-    # make move, end turn
+  def set_opponent(color)
+    return 'white' if color == 'b'
+
+    'black'
   end
 
   def get_input(target)
