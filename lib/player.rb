@@ -1,18 +1,31 @@
-# require_relative 'pieces'
+require_relative 'moveable'
 
 class Player
-  WHITE_PIECES = %w[K Q R B N P]
-  BLACK_PIECES = %w[k q r b n p]
+  include Moveable
 
-  def initialize(color, board_array = nil)
-    @board_array = board_array
-    @moveable = WHITE_PIECES if color == 'w'
-    @moveable = BLACK_PIECES if color == 'b'
-    @legal_moves = []
+  attr_accessor :color, :captured
+
+  def initialize(color)
+    @color = set_color(color)
+    @captured = []
   end
 
-  def get_input
-    print "Where is the piece that you'd like to move? "
+  def set_color(color)
+    return 'white' if color == 'w'
+
+    'black'
+  end
+
+  def turn(board_array)
+    possible_moves(get_input('piece'))
+    # print possible moves
+    get_input('move')
+    # make move, end turn
+  end
+
+  def get_input(target)
+    print "Where is the piece that you'd like to move? " if target == 'piece'
+    print 'Where would you like to move? ' if target == 'move'
     algebraic = gets.chomp until !algebraic.nil? && algebraic.length == 2
     algebraic_to_coord(algebraic)
   end
@@ -24,14 +37,6 @@ class Player
 
   def which_piece(coord, board_array)
     piece = board_array[coord[0]][coord[1]]
-  end
-
-  def find_pieces(player)
-    @board_array.each do |rank|
-      rank.each do |square|
-        legal_moves(rank, square) if pieces.include?(square)
-      end
-    end
   end
 end
 
