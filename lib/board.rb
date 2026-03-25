@@ -1,8 +1,7 @@
 require_relative 'board_colors'
-require_relative 'load_game'
 require_relative 'piece'
 
-# •
+# • (for possible moves)
 # BULLET
 # Unicode: U+2022, UTF-8: E2 80 A2
 
@@ -17,10 +16,16 @@ class Board
 
   def build_board(board_array)
     board_array = board_array.map.with_index do |rank, r_index|
-      rank.map.with_index do |square, s_index|
-        square = Piece.new(file, [r_index, s_index]) unless square.nil?
+      rank.map.with_index do |piece, s_index|
+        piece = Piece.new(piece, [r_index, s_index]) unless piece.nil?
       end
     end
+  end
+
+  def display_moves(moves)
+    # combines possible moves with current board array and
+    # displays board with possible moves (as red bullets and
+    # red pieces for capture)
   end
 
   def print_board(color)
