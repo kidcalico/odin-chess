@@ -17,8 +17,8 @@ class Board
 
   def build_board(board_array)
     board_array = board_array.map.with_index do |rank, r_index|
-      rank.map.with_index do |file, f_index|
-        file = Piece.new(file, [r_index, f_index]) unless file.nil?
+      rank.map.with_index do |square, s_index|
+        square = Piece.new(file, [r_index, s_index]) unless square.nil?
       end
     end
   end
