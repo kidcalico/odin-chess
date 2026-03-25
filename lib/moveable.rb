@@ -1,12 +1,12 @@
 module Moveable
-  def possible_moves(location, board_array, turn)
+  def possible_moves(location, board_array, opponent)
     case board_array[location[0]][location[1]].type
-    when 'pawn' then pawn_moves(location, board_array, turn)
-    when 'knight' then knight_moves(location, board_array, turn)
-    when 'bishop' then bishop_moves(board_array)
-    when 'rook' then rook_moves(board_array)
-    when 'queen' then queen_moves(board_array)
-    when 'king' then king_moves(board_array)
+    when 'pawn' then pawn_moves(location, board_array, opponent)
+    when 'knight' then knight_moves(location, board_array, opponent)
+    when 'bishop' then bishop_moves(location, board_array, opponent)
+    when 'rook' then rook_moves(location, board_array, opponent)
+    when 'queen' then queen_moves(location, board_array, opponent)
+    when 'king' then king_moves(location, board_array, opponent)
     end
   end
 
@@ -20,16 +20,16 @@ module Moveable
     # checks for attack possibilities,
   end
 
-  def pawn_moves(location, board_array, turn)
-    if turn == 'white' && board_array[location[0]][location[1]].color == 'white'
+  def pawn_moves(location, board_array, opponent)
+    if opponent == 'black' && board_array[location[0]][location[1]].color == 'white'
       return white_pawn_moves(location,
-                              board_array, turn)
+                              board_array, opponent)
     end
 
-    black_pawn_moves(location, board_array, turn) if turn == 'black'
+    black_pawn_moves(location, board_array, opponent) if opponent == 'white'
   end
 
-  def white_pawn_moves(location, board_array, turn)
+  def white_pawn_moves(location, board_array, opponent)
     result = []
     if location[0] > 0
       result.push([location[0] - 1, location[1]]) if board_array[location[0] - 1][location[1]].nil?
@@ -49,7 +49,7 @@ module Moveable
     result
   end
 
-  def black_pawn_moves(location, board_array, turn)
+  def black_pawn_moves(location, board_array, opponent)
     result = []
     if location[0] < 7
       result.push([location[0] + 1, location[1]]) if board_array[location[0] + 1][location[1]].nil?
@@ -69,9 +69,9 @@ module Moveable
     result
   end
 
-  def knight_moves(location, board_array, turn)
+  def knight_moves(location, board_array, opponent)
     all_knight_moves(location).map do |move|
-      move if board_array[move[0]][move[1]].nil? || board_array[move[0]][move[1]].color != turn
+      move if board_array[move[0]][move[1]].nil? || board_array[move[0]][move[1]].color == opponent
     end.compact
   end
 
