@@ -36,49 +36,86 @@ class Piece
     end
   end
 
-  def legal_moves
+  def possible_moves(board_array)
     case type
-    when 'pawn' then pawn_moves
-    when 'knight' then knight_moves
-    when 'bishop' then bishop_moves
-    when 'rook' then rook_moves
-    when 'queen' then queen_moves
-    when 'king' then king_moves
+    when 'pawn' then pawn_moves(board_array)
+    when 'knight' then knight_moves(board_array)
+    when 'bishop' then bishop_moves(board_array)
+    when 'rook' then rook_moves(board_array)
+    when 'queen' then queen_moves(board_array)
+    when 'king' then king_moves(board_array)
     end
   end
 
   private
 
-  def pawn_moves
+  def check_moves
+    # accepts array of possible moves, removing any that are blocked
+  end
+
+  def attacks
+    # checks for attack possibilities,
+  end
+
+  def pawn_moves(board_array)
+    return white_pawn_moves if color == 'white'
+
+    black_pawn_moves
+  end
+
+  def white_pawn_moves(board_array)
     result = []
-    if location[0] == 6 && color == 'white'
+    if location[0] == 6
       result.push([location[0] - 1, location[1]],
                   [location[0] - 2, location[1]])
-    elsif location[0] == 1 && color == 'black'
-      result.push([location[0] + 1, location[1]],
-                  [location[0] + 2, location[1]])
-    elsif color == 'white'
+    elsif location[0] > 0
       result = [location[0] - 1, location[1]]
-    elsif color == 'black'
-      result = [location[0] + 1, location[1]]
+      unless location[1] - 1 < 0 && board_array[location[0] - 1][location[1] - 1].nil? && board_array[location[0] - 1][location[1] - 1].color == 'white'
+        result.push([location[0] - 1,
+                     location[1] - 1])
+      end
+      unless location[1] + 1 > 7 && board_array[location[0] - 1][location[1] + 1].nil? && board_array[location[0] - 1][location[1] + 1].color == 'white'
+        result.push([location[0] - 1,
+                     location[1] + 1])
+      end
     end
-    # add attack conditions, limit results to board coordinates and occupied squares for non attacks
     result
   end
 
-  def knight_moves(square)
+  def black_pawn_moves(board_array)
+    result = []
+    if location[0] == 1
+      result.push([location[0] + 1, location[1]],
+                  [location[0] + 2, location[1]])
+    elsif location[0] < 7
+      result = [location[0] + 1, location[1]]
+      unless location[1] - 1 < 0 && board_array[location[0] + 1][location[1] - 1].nil? && board_array[location[0] + 1][location[1] - 1].color == 'black'
+        result.push([location[0] + 1,
+                     location[1] - 1])
+      end
+      unless location[1] + 1 > 7 && board_array[location[0] + 1][location[1] + 1].nil? && board_array[location[0] + 1][location[1] + 1].color == 'black'
+        result.push([location[0] + 1,
+                     location[1] + 1])
+      end
+    end
+    result
+  end
+
+  def knight_moves
     [
-      [square[0] + 1, square[1] + 2], [square[0] - 1, square[1] + 2],
-      [square[0] + 1, square[1] - 2], [square[0] - 1, square[1] - 2],
-      [square[0] + 2, square[1] + 1], [square[0] + 2, square[1] - 1],
-      [square[0] - 2, square[1] + 1], [square[0] - 2, square[1] - 1]
-    ]
+      [location[0] + 1, location[1] + 2], [location[0] - 1, location[1] + 2],
+      [location[0] + 1, location[1] - 2], [location[0] - 1, location[1] - 2],
+      [location[0] + 2, location[1] + 1], [location[0] + 2, location[1] - 1],
+      [location[0] - 2, location[1] + 1], [location[0] - 2, location[1] - 1]
+    ].reject { |move| move.any? { |v| v < 0 || v > 7 } }
   end
 
   def bishop_moves
+    result = []
   end
 
   def rook_moves
+    result = []
   end
 
   def queen_moves
