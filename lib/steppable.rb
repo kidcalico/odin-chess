@@ -1,48 +1,27 @@
 module Steppable
   def pawn_moves(location, board_array, opponent)
-    if opponent == 'black' && board_array[location[0]][location[1]].color == 'white'
-      return white_pawn_moves(location,
-                              board_array, opponent)
-    end
-
-    black_pawn_moves(location, board_array, opponent) if opponent == 'white'
-  end
-
-  def white_pawn_moves(location, board_array, opponent)
     result = []
-    if location[0] > 0
-      result.push([location[0] - 1, location[1]]) if board_array[location[0] - 1][location[1]].nil?
-      if location[0] == 6 && board_array[location[0] - 1][location[1]].nil? && board_array[location[0] - 1][location[1]].nil?
-        result.push([location[0] - 2,
-                     location[1]])
-      end
-      if location[1] - 1 > 0 && !board_array[location[0] - 1][location[1] - 1].nil? && board_array[location[0] - 1][location[1] - 1].color == 'black'
-        result.push([location[0] - 1,
-                     location[1] - 1])
-      end
-      if location[1] + 1 < 7 && !board_array[location[0] - 1][location[1] + 1].nil? && board_array[location[0] - 1][location[1] + 1].color == 'black'
-        result.push([location[0] - 1,
-                     location[1] + 1])
-      end
-    end
-    result
-  end
+    rank = location[0]
+    file = location[1]
+    direction = if opponent == 'white'
+                  1
+                else
+                  -1
+                end
 
-  def black_pawn_moves(location, board_array, opponent)
-    result = []
-    if location[0] < 7
-      result.push([location[0] + 1, location[1]]) if board_array[location[0] + 1][location[1]].nil?
-      if location[0] == 1 && board_array[location[0] + 1][location[1]].nil? && board_array[location[0] + 2][location[1]].nil?
-        result.push([location[0] + 2,
-                     location[1]])
+    if rank > 0 && rank < 7
+      result.push([rank + direction, file]) if board_array[rank + direction][file].nil?
+      if ((rank == 6 && opponent = 'black') || (rank == 1 && opponent = 'white')) && board_array[rank + direction][file].nil? && board_array[rank + (direction * 2)][file].nil?
+        result.push([rank + (direction * 2),
+                     file])
       end
-      if location[1] - 1 > 0 && !board_array[location[0] + 1][location[1] - 1].nil? && board_array[location[0] + 1][location[1] - 1].color == 'white'
-        result.push([location[0] + 1,
-                     location[1] - 1])
+      if file - 1 >= 0 && !board_array[rank + direction][file - 1].nil? && board_array[rank + direction][file - 1].color == opponent
+        result.push([rank + direction,
+                     file - 1])
       end
-      if location[1] + 1 < 7 && !board_array[location[0] + 1][location[1] + 1].nil? && board_array[location[0] + 1][location[1] + 1].color == 'white'
-        result.push([location[0] + 1,
-                     location[1] + 1])
+      if file + 1 <= 7 && !board_array[rank + direction][file + 1].nil? && board_array[rank + direction][file + 1].color == opponent
+        result.push([rank + direction,
+                     file + 1])
       end
     end
     result
