@@ -19,10 +19,10 @@ class Game
     @black = Player.new('b')
   end
 
-  # def test
-  #   move = white.get_input('piece')
-  #   possible_moves(move, board.board, 'white')
-  # end
+  def test
+    move = white.get_input('piece')
+    possible_moves(move, board.board, 'black')
+  end
 
   def play_game
     until checkmate?(game_stats[:turn]) == true
@@ -69,9 +69,3 @@ class Game
   def end_game
   end
 end
-
-test = Game.new
-
-test.board.print_board('w')
-p test.game_stats
-# p test.test

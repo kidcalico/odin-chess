@@ -10,7 +10,7 @@ module Moveable
     end
   end
 
-  private
+  # private
 
   def check_moves
     # accepts array of possible moves, removing any that are blocked
@@ -84,8 +84,96 @@ module Moveable
     ].reject { |move| move.any? { |v| v < 0 || v > 7 } }
   end
 
-  def bishop_moves
+  def bishop_moves(location, board_array, opponent)
     result = []
+    result.concat(bishop_ne(location, board_array, opponent),
+                  bishop_se(location, board_array, opponent),
+                  bishop_sw(location, board_array, opponent),
+                  bishop_nw(location, board_array, opponent))
+  end
+
+  def bishop_ne(location, board_array, opponent)
+    result = []
+    i = 1
+    loop do
+      break if location[0] - i < 0 || location[1] + i > 7
+
+      unless board_array[location[0] - i][location[1] + i].nil?
+        if board_array[location[0] - i][location[1] + i].color == opponent
+          result << [location[0] - i, location[1] + i]
+          break
+        elsif board_array[location[0] - i][location[1] + i].color != opponent
+          break
+        end
+      end
+      result << [location[0] - i, location[1] + i]
+      i += 1
+      break if location[0] - i < 0 || location[1] + i > 7
+    end
+    result
+  end
+
+  def bishop_se(location, board_array, opponent)
+    result = []
+    i = 1
+    loop do
+      break if location[0] + i > 7 || location[1] + i > 7
+
+      unless board_array[location[0] + i][location[1] + i].nil?
+        if board_array[location[0] + i][location[1] + i].color == opponent
+          result << [location[0] + i, location[1] + i]
+          break
+        elsif board_array[location[0] + i][location[1] + i].color != opponent
+          break
+        end
+      end
+      result << [location[0] + i, location[1] + i]
+      i += 1
+      break if location[0] + i > 7 || location[1] + i > 7
+    end
+    result
+  end
+
+  def bishop_sw(location, board_array, opponent)
+    result = []
+    i = 1
+    loop do
+      break if location[0] + i > 7 || location[1] - i < 0
+
+      unless board_array[location[0] + i][location[1] - i].nil?
+        if board_array[location[0] + i][location[1] - i].color == opponent
+          result << [location[0] + i, location[1] - i]
+          break
+        elsif board_array[location[0] + i][location[1] - i].color != opponent
+          break
+        end
+      end
+      result << [location[0] + i, location[1] - i]
+      i += 1
+      break if location[0] + i > 7 || location[1] - i < 0
+    end
+    result
+  end
+
+  def bishop_nw(location, board_array, opponent)
+    result = []
+    i = 1
+    loop do
+      break if location[0] - i < 0 || location[1] - i < 0
+
+      unless board_array[location[0] - i][location[1] - i].nil?
+        if board_array[location[0] - i][location[1] - i].color == opponent
+          result << [location[0] - i, location[1] - i]
+          break
+        elsif board_array[location[0] - i][location[1] - i].color != opponent
+          break
+        end
+      end
+      result << [location[0] - i, location[1] - i]
+      i += 1
+      break if location[0] - i < 0 || location[1] - i < 0
+    end
+    result
   end
 
   def rook_moves
