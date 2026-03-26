@@ -1,13 +1,14 @@
 require 'pry-byebug'
 require_relative 'board'
 require_relative 'player'
+require_relative 'rules'
 
 class Game
   NEW_GAME = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'.freeze
   TEST_GAME = '1r6/5pp1/R1R4p/1r1pP3/2pkQPP1/7P/1P6/2K5 w - - 0 41'
   SAVED_GAME = 'r1bqkbnr/ppp2ppp/2np4/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4'
 
-  include Moveable
+  include Rules
 
   attr_accessor :game_array, :game_stats, :board, :white, :black
 
@@ -58,12 +59,6 @@ class Game
         square
       end.flatten
     end
-  end
-
-  def check?(color)
-  end
-
-  def checkmate?(color)
   end
 
   def end_game
