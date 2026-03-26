@@ -1,8 +1,4 @@
-require_relative 'moveable'
-
 class Player
-  include Moveable
-
   attr_accessor :color, :opponent, :captured
 
   def initialize(color)
