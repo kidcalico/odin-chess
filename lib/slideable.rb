@@ -1,39 +1,48 @@
 module Slideable
+  DIAGONAL_DIRECTIONS = [[-1, 1], [1, 1], [1, -1], [-1, -1]]
+  LATERAL_DIRECTIONS = [[1, 0], [-1, 0], [0, 1], [0, -1]]
+
   def bishop_moves(location, board_array, opponent)
-    diagonal_slide(location, board_array, opponent)
+    directions = DIAGONAL_DIRECTIONS
+    slide(location, board_array, opponent, directions)
   end
 
-  def diagonal_slide(location, board_array, opponent)
+  def rook_moves(location, board_array, opponent)
+    directions = LATERAL_DIRECTIONS
+    slide(location, board_array, opponent, directions)
+  end
+
+  def queen_moves(location, board_array, opponent)
+    directions = LATERAL_DIRECTIONS + DIAGONAL_DIRECTIONS
+    slide(location, board_array, opponent, directions)
+  end
+
+  private
+
+  def slide(location, board_array, opponent, directions)
     result = []
 
     rank = location[0]
     file = location[1]
 
-    directions = [[-1, +1], [+1, +1], [+1, -1], [-1, -1]]
-
     directions.each do |direction|
-      x = direction[0]
-      y = direction[1]
+      r_direction = direction[0]
+      f_direction = direction[1]
       loop do
-        break if (rank + x < 0 || rank + x > 7) || (file + y < 0 || file + y > 7)
-
-        if board_array[rank + x][file + y].nil? || board_array[rank + x][file + y].color == opponent
-          result << [rank + x,
-                     file + y]
+        if (rank + r_direction < 0 || rank + r_direction > 7) || (file + f_direction < 0 || file + f_direction > 7)
+          break
         end
-        break unless board_array[rank + x][file + y].nil?
 
-        x += direction[0]
-        y += direction[1]
+        if board_array[rank + r_direction][file + f_direction].nil? || board_array[rank + r_direction][file + f_direction].color == opponent
+          result << [rank + r_direction,
+                     file + f_direction]
+        end
+        break unless board_array[rank + r_direction][file + f_direction].nil?
+
+        r_direction += direction[0]
+        f_direction += direction[1]
       end
     end
     result
-  end
-
-  def rook_moves
-    result = []
-  end
-
-  def queen_moves
   end
 end
