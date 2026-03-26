@@ -1,10 +1,6 @@
 require_relative 'board_colors'
 require_relative 'piece'
 
-# • (for possible moves)
-# BULLET
-# Unicode: U+2022, UTF-8: E2 80 A2
-
 class Board
   using BoardColors
 
@@ -22,19 +18,32 @@ class Board
     end
   end
 
-  def display_moves(moves)
-    # combines possible moves with current board array and
-    # displays board with possible moves (as red bullets and
-    # red pieces for capture)
+  def display_moves(color, moves)
+    print_ready = array_print_ready(board)
+    bullet = "\u2022 "
+    print_ready = print_ready.map.with_index do |rank, r_index|
+      rank.map.with_index do |file, f_index|
+        next file unless moves.any? { |move| move == [r_index, f_index] }
+
+        next bullet.red_piece if file == '  '
+
+        "#{file[10]} ".red_piece
+      end
+    end
+    print_array(color, print_ready)
   end
 
   def print_board(color)
     print_ready = array_print_ready(board)
-    if color == 'w'
-      print_ready.each_with_index { |pieces, rank| print_rank(8 - rank, pieces, color) }
+    print_array(color, print_ready)
+  end
+
+  def print_array(color, array)
+    if color == 'white'
+      array.each_with_index { |pieces, rank| print_rank(8 - rank, pieces, color) }
       print "   a  b  c  d  e  f  g  h\n"
     else
-      print_ready.reverse.each_with_index { |pieces, rank| print_rank(rank + 1, pieces, color) }
+      array.reverse.each_with_index { |pieces, rank| print_rank(rank + 1, pieces, color) }
       print "   h  g  f  e  d  c  b  a\n"
     end
   end
@@ -44,8 +53,8 @@ class Board
 
     board = piece_with_square(array, num)
 
-    board.each { |square| print square } if color == 'w'
-    board.reverse.each { |square| print square } if color == 'b'
+    board.each { |square| print square } if color == 'white'
+    board.reverse.each { |square| print square } if color == 'black'
 
     print "\n"
   end
