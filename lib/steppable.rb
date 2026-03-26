@@ -49,18 +49,15 @@ module Steppable
   end
 
   def knight_moves(location, board_array, opponent)
-    all_knight_moves(location).map do |move|
-      move if board_array[move[0]][move[1]].nil? || board_array[move[0]][move[1]].color == opponent
-    end.compact
-  end
+    basic_moves = [[1, 2], [-1, 2], [1, -2], [-1, -2], [2, 1], [2, -1], [-2, 1], [-2, -1]]
+    moves = basic_moves.map do |move|
+      possible_move = move.map.with_index { |coordinate, index| coordinate + location[index] }
+      next if (possible_move[0] < 0 || possible_move[0] > 7) || (possible_move[1] < 0 || possible_move[1] > 7)
+      next unless board_array[possible_move[0]][possible_move[1]].nil? ||
+                  board_array[possible_move[0]][possible_move[1]].color == opponent
 
-  def all_knight_moves(location)
-    [
-      [location[0] + 1, location[1] + 2], [location[0] - 1, location[1] + 2],
-      [location[0] + 1, location[1] - 2], [location[0] - 1, location[1] - 2],
-      [location[0] + 2, location[1] + 1], [location[0] + 2, location[1] - 1],
-      [location[0] - 2, location[1] + 1], [location[0] - 2, location[1] - 1]
-    ].reject { |move| move.any? { |v| v < 0 || v > 7 } }
+      possible_move
+    end.compact
   end
 
   def king_moves
