@@ -44,7 +44,7 @@ class Game
     turn_prompt(current_player)
     sleep 0.1
     choose_and_move(current_player)
-    sleep 0.5
+    sleep 1
     game_stats[:turn] = current_player.opponent
   end
 
@@ -59,16 +59,36 @@ class Game
   end
 
   def choose_and_move(current_player)
-    piece = current_player.get_input('piece')
+    piece = select_piece(current_player)
     possible = possible_moves(piece, board.board, current_player.opponent)
     board.display_moves(current_player.color, possible)
-    move = current_player.get_input('move')
+    move = select_move(current_player, possible)
     captured = board.make_move(piece, move)
     board.print_board(current_player.color)
     return if captured.nil?
 
     puts "#{current_player.color.capitalize} captured a #{current_player.opponent} #{captured.type}!"
     current_player.captured.push(captured)
+  end
+
+  def select_piece(current_player)
+    loop do
+      piece = current_player.get_input('piece')
+      unless board.board[piece[0]][piece[1]].nil? || board.board[piece[0]][piece[1]].color != current_player.color
+        return piece
+      end
+
+      puts "Please select a #{current_player.color} piece."
+    end
+  end
+
+  def select_move(current_player, possible)
+    loop do
+      move = current_player.get_input('move')
+      return move if possible.include?(move)
+
+      puts 'You cannot move there, please select from the given options.'
+    end
   end
 
   def load_fen(fen_code)
