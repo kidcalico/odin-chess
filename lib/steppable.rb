@@ -11,7 +11,7 @@ module Steppable
 
     if rank > 0 && rank < 7
       result.push([rank + direction, file]) if board_array[rank + direction][file].nil?
-      if ((rank == 6 && opponent = 'black') || (rank == 1 && opponent = 'white')) && board_array[rank + direction][file].nil? && board_array[rank + (direction * 2)][file].nil?
+      if ((rank == 6 && opponent = 'black') || (rank == 1 && opponent == 'white')) && board_array[rank + direction][file].nil? && board_array[rank + (direction * 2)][file].nil?
         result.push([rank + (direction * 2),
                      file])
       end
@@ -39,6 +39,20 @@ module Steppable
     end.compact
   end
 
-  def king_moves
+  def king_moves(location, board_array, opponent)
+    directions = [[-1, 1], [1, 1], [1, -1], [-1, -1], [1, 0], [-1, 0], [0, 1], [0, -1]]
+    rank = location[0]
+    file = location[1]
+
+    results = directions.map do |direction|
+      r_direction = direction[0]
+      f_direction = direction[1]
+
+      next if [rank + r_direction, file + f_direction].any? { |coordinate| coordinate < 0 || coordinate > 7 }
+
+      if board_array[rank + r_direction][file + f_direction].nil? || board_array[rank + r_direction][file + f_direction].color == opponent
+        [rank + r_direction, file + f_direction]
+      end
+    end
   end
 end
