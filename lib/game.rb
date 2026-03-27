@@ -12,7 +12,7 @@ class Game
 
   attr_accessor :game_array, :game_stats, :board, :white, :black
 
-  def initialize(fen_code = SAVED_GAME)
+  def initialize(fen_code = TEST_GAME)
     @game_array = load_fen(fen_code)
     @board = Board.new(game_array[0])
     @game_stats = load_stats
@@ -21,8 +21,11 @@ class Game
   end
 
   def test
-    move = white.get_input('piece')
-    possible_moves(move, board.board, 'black')
+    current_player = white
+    board.print_board(current_player.color)
+    move = current_player.get_input('piece')
+    p possible = possible_moves(move, board.board, current_player.opponent)
+    board.display_moves(current_player.color, possible)
   end
 
   def play_game
@@ -47,8 +50,14 @@ class Game
   end
 
   def load_stats
-    { turn: game_array[1], castle: game_array[2], en_passant: game_array[3],
+    { turn: load_turn(game_array[1]), castle: game_array[2], en_passant: game_array[3],
       half_moves: game_array[4], full_moves: game_array[5] }
+  end
+
+  def load_turn(turn)
+    return 'white' if turn == 'w'
+
+    'black'
   end
 
   def num_to_empties(fen_code)
@@ -64,3 +73,7 @@ class Game
   def end_game
   end
 end
+
+test = Game.new
+# test.test
+p test.game_stats
