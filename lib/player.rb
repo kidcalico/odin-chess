@@ -26,6 +26,8 @@ class Player
       print 'Where would you like to move? ' if target == 'move'
       algebraic = gets.chomp
       break if input_valid?(algebraic)
+
+      puts 'Invalid input, please try again...'
     end
     algebraic_to_coord(algebraic)
   end
