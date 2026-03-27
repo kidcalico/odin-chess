@@ -11,15 +11,11 @@ class Board
   end
 
   def make_move(piece, move)
-    r_piece = piece[0]
-    f_piece = piece[1]
-    r_move = move[0]
-    f_move = move[1]
     captured = nil
 
-    captured = board[r_move][f_move] unless board[r_move][f_move].nil?
-    board[r_move][f_move] = board[r_piece][f_piece]
-    board[r_piece][f_piece] = nil
+    captured = board[move[0]][move[1]] unless board[move[0]][move[1]].nil?
+    board[move[0]][move[1]] = board[piece[0]][piece[1]]
+    board[piece[0]][piece[1]] = nil
 
     captured
   end
