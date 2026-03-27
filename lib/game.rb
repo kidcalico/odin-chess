@@ -41,6 +41,14 @@ class Game
   end
 
   def half_turn(current_player)
+    turn_prompt(current_player)
+    sleep 0.1
+    choose_and_move(current_player)
+    sleep 0.5
+    game_stats[:turn] = current_player.opponent
+  end
+
+  def turn_prompt(current_player)
     board.print_board(current_player.color)
     if current_player.captured.length > 0
       print "#{current_player.color.capitalize} has captured: "
@@ -48,18 +56,19 @@ class Game
       print "\n"
     end
     print "#{current_player.color.capitalize} to play: "
+  end
+
+  def choose_and_move(current_player)
     piece = current_player.get_input('piece')
     possible = possible_moves(piece, board.board, current_player.opponent)
     board.display_moves(current_player.color, possible)
     move = current_player.get_input('move')
     captured = board.make_move(piece, move)
     board.print_board(current_player.color)
-    unless captured.nil?
-      puts "#{current_player.color.capitalize} captured a #{current_player.opponent} #{captured.type}!"
-      current_player.captured.push(captured)
-    end
-    game_stats[:turn] = current_player.opponent
-    sleep 2
+    return if captured.nil?
+
+    puts "#{current_player.color.capitalize} captured a #{current_player.opponent} #{captured.type}!"
+    current_player.captured.push(captured)
   end
 
   def load_fen(fen_code)
@@ -95,7 +104,7 @@ class Game
     puts 'Enter your moves using a letter (a-h) followed by a number (1-8).'
     puts "For example: 'd2' (to select piece) and 'd3' (to move that piece one square)."
     puts 'Enjoy your game :)'
-    sleep 3
+    sleep 1
   end
 
   def end_game
