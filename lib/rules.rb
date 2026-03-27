@@ -23,7 +23,8 @@ module Rules
   end
 
   def en_passant_tracker(piece, move)
-    return unless board.board[piece[0]][piece[1]].type == 'pawn' && (piece[0] - move[0]).abs == 2
+    game_stats[:en_passant] = '-' if game_stats[:en_passant] != '-'
+    return unless board.board[move[0]][move[1]].type == 'pawn' && (piece[0] - move[0]).abs == 2
 
     en_passant_square(move)
   end
@@ -37,7 +38,7 @@ module Rules
   end
 
   def move_to_algebraic(move)
-    [(move[1] + 97).chr + (8 - move[0])].join
+    [(move[1] + 97).chr + (8 - move[0]).to_s].join
   end
 
   def check?(color)

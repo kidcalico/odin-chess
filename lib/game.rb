@@ -63,9 +63,9 @@ class Game
     possible = possible_moves(piece, board.board, current_player.opponent)
     board.display_moves(current_player.color, possible)
     move = select_move(current_player, possible)
-    en_passant_tracker(piece, move)
     captured = board.make_move(piece, move)
     board.print_board(current_player.color)
+    en_passant_tracker(piece, move)
     return if captured.nil?
 
     puts "#{current_player.color.capitalize} captured a #{current_player.opponent} #{captured.type}!"

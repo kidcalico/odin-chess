@@ -15,11 +15,15 @@ module Steppable
         result.push([rank + (direction * 2),
                      file])
       end
-      if file - 1 >= 0 && !board_array[rank + direction][file - 1].nil? && board_array[rank + direction][file - 1].color == opponent
+      if file - 1 >= 0 && ((!board_array[rank + direction][file - 1].nil? && board_array[rank + direction][file - 1].color == opponent) || move_to_algebraic([
+                                                                                                                                                               (rank + direction), (file - 1)
+                                                                                                                                                             ]) == game_stats[:en_passant])
         result.push([rank + direction,
                      file - 1])
       end
-      if file + 1 <= 7 && !board_array[rank + direction][file + 1].nil? && board_array[rank + direction][file + 1].color == opponent
+      if file + 1 <= 7 && ((!board_array[rank + direction][file + 1].nil? && board_array[rank + direction][file + 1].color == opponent) || move_to_algebraic([
+                                                                                                                                                               (rank + direction), (file + 1)
+                                                                                                                                                             ]) == game_stats[:en_passant])
         result.push([rank + direction,
                      file + 1])
       end
