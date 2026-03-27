@@ -10,6 +10,20 @@ class Board
     @board = build_board(board_array)
   end
 
+  def make_move(piece, move)
+    r_piece = piece[0]
+    f_piece = piece[1]
+    r_move = move[0]
+    f_move = move[1]
+    captured = nil
+
+    captured = board[r_move][f_move] unless board[r_move][f_move].nil?
+    board[r_move][f_move] = board[r_piece][f_piece]
+    board[r_piece][f_piece] = nil
+
+    captured
+  end
+
   def build_board(board_array)
     board_array = board_array.map.with_index do |rank, r_index|
       rank.map.with_index do |piece, s_index|
