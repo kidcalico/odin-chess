@@ -1,4 +1,5 @@
 require 'pry-byebug'
+require_relative 'board_colors'
 require_relative 'board'
 require_relative 'player'
 require_relative 'rules'
@@ -8,11 +9,12 @@ class Game
   TEST_GAME = '1r6/5pp1/R1R4p/1r1pP3/2pkQPP1/7P/1P6/2K5 w - - 0 41'
   SAVED_GAME = 'r1bqkbnr/ppp2ppp/2np4/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4'
 
+  using BoardColors
   include Rules
 
   attr_accessor :game_array, :game_stats, :board, :white, :black
 
-  def initialize(fen_code = TEST_GAME)
+  def initialize(fen_code = SAVED_GAME)
     @game_array = load_fen(fen_code)
     @board = Board.new(game_array[0])
     @game_stats = load_stats
@@ -20,27 +22,44 @@ class Game
     @black = Player.new('b')
   end
 
-  def test
-    current_player = white
-    board.print_board(current_player.color)
-    move = current_player.get_input('piece')
-    p possible = possible_moves(move, board.board, current_player.opponent)
-    board.display_moves(current_player.color, possible)
-  end
-
   def play_game
-    until checkmate?(game_stats[:turn]) == true
-      check_prompt if check?(game_stats[:turn]) == true
+    start_game
+    until checkmate?(game_stats[:turn]) == true || stalemate?(game_stats[:turn]) == true
+      notify_check if check?(game_stats[:turn]) == true
 
-      if game_stats[:turn] == 'w'
-        board.print_board('w')
-        white.turn(board)
-      else
-        board.print_board('b')
-        black.turn(board)
-      end
+      current_player = if game_stats[:turn] == 'white'
+                         white
+                       else
+                         black
+                       end
+
+      half_turn(current_player)
+      game_stats[:full_moves] += 1 if current_player.color == 'black'
+
     end
     end_game
+  end
+
+  def half_turn(current_player)
+    board.print_board(current_player.color)
+    if current_player.captured.length > 0
+      print "#{current_player.color.capitalize} has captured: "
+      current_player.captured.each { |piece| print piece.symbol.red_piece }
+      print "\n"
+    end
+    print "#{current_player.color.capitalize} to play: "
+    piece = current_player.get_input('piece')
+    possible = possible_moves(piece, board.board, current_player.opponent)
+    board.display_moves(current_player.color, possible)
+    move = current_player.get_input('move')
+    captured = board.make_move(piece, move)
+    board.print_board(current_player.color)
+    unless captured.nil?
+      puts "#{current_player.color.capitalize} captured a #{current_player.opponent} #{captured.type}!"
+      current_player.captured.push(captured)
+    end
+    game_stats[:turn] = current_player.opponent
+    sleep 2
   end
 
   def load_fen(fen_code)
@@ -51,7 +70,7 @@ class Game
 
   def load_stats
     { turn: load_turn(game_array[1]), castle: game_array[2], en_passant: game_array[3],
-      half_moves: game_array[4], full_moves: game_array[5] }
+      half_moves: game_array[4].to_i, full_moves: game_array[5].to_i }
   end
 
   def load_turn(turn)
@@ -70,10 +89,19 @@ class Game
     end
   end
 
+  def start_game
+    puts "\e[2J\e[fWelcome to Chess in the Terminal, coded in Ruby."
+    puts 'Game to be played using algebraic coordinates:'
+    puts 'Enter your moves using a letter (a-h) followed by a number (1-8).'
+    puts "For example: 'd2' (to select piece) and 'd3' (to move that piece one square)."
+    puts 'Enjoy your game :)'
+    sleep 3
+  end
+
   def end_game
   end
 end
 
 test = Game.new
-# test.test
 p test.game_stats
+test.play_game
