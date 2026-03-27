@@ -10,7 +10,8 @@ module BoardColors
     # black_square: '88',
     # white_square: '130',
     black_piece: '16',
-    white_piece: '15'
+    white_piece: '15',
+    red_piece: '9'
   }.freeze
 
   refine String do
@@ -31,6 +32,11 @@ module BoardColors
 
     def black_piece
       color_val = COLORS[:black_piece]
+      "\e[38;5;#{color_val}m#{self}\e[0m"
+    end
+
+    def red_piece
+      color_val = COLORS[:red_piece]
       "\e[38;5;#{color_val}m#{self}\e[0m"
     end
   end
