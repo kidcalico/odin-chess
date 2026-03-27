@@ -40,9 +40,11 @@ class Board
 
   def print_array(color, array)
     if color == 'white'
+      print "   a  b  c  d  e  f  g  h\n"
       array.each_with_index { |pieces, rank| print_rank(8 - rank, pieces, color) }
       print "   a  b  c  d  e  f  g  h\n"
     else
+      print "   h  g  f  e  d  c  b  a\n"
       array.reverse.each_with_index { |pieces, rank| print_rank(rank + 1, pieces, color) }
       print "   h  g  f  e  d  c  b  a\n"
     end
@@ -56,7 +58,7 @@ class Board
     board.each { |square| print square } if color == 'white'
     board.reverse.each { |square| print square } if color == 'black'
 
-    print "\n"
+    print " #{num}\n"
   end
 
   def piece_with_square(output, num)
