@@ -11,7 +11,7 @@ module Steppable
 
     if rank > 0 && rank < 7
       result.push([rank + direction, file]) if board_array[rank + direction][file].nil?
-      if ((rank == 6 && opponent = 'black') || (rank == 1 && opponent == 'white')) && board_array[rank + direction][file].nil? && board_array[rank + (direction * 2)][file].nil?
+      if ((rank == 6 && opponent == 'black') || (rank == 1 && opponent == 'white')) && board_array[rank + direction][file].nil? && board_array[rank + (direction * 2)][file].nil?
         result.push([rank + (direction * 2),
                      file])
       end
