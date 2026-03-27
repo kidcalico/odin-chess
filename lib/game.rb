@@ -14,7 +14,7 @@ class Game
 
   attr_accessor :game_array, :game_stats, :board, :white, :black
 
-  def initialize(fen_code = SAVED_GAME)
+  def initialize(fen_code = NEW_GAME)
     @game_array = load_fen(fen_code)
     @board = Board.new(game_array[0])
     @game_stats = load_stats
@@ -63,6 +63,7 @@ class Game
     possible = possible_moves(piece, board.board, current_player.opponent)
     board.display_moves(current_player.color, possible)
     move = select_move(current_player, possible)
+    en_passant_tracker(piece, move)
     captured = board.make_move(piece, move)
     board.print_board(current_player.color)
     return if captured.nil?
@@ -122,7 +123,7 @@ class Game
     puts "\e[2J\e[fWelcome to Chess in the Terminal, coded in Ruby."
     puts 'Game to be played using algebraic coordinates:'
     puts 'Enter your moves using a letter (a-h) followed by a number (1-8).'
-    puts "For example: 'd2' (to select piece) and 'd3' (to move that piece one square)."
+    puts "For example: 'd2' (to select piece) and 'd3' (move to d3)."
     puts 'Enjoy your game :)'
     sleep 1
   end
