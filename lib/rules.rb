@@ -23,7 +23,7 @@ module Rules
   end
 
   def en_passant_tracker(piece, move)
-    game_stats[:en_passant] = '-' if game_stats[:en_passant] != '-'
+    game_stats[:en_passant] = { algebraic: '-', piece: '-', move: '-' } if game_stats[:en_passant][:algebraic] != '-'
     return unless board.board[move[0]][move[1]].type == 'pawn' && (piece[0] - move[0]).abs == 2
 
     en_passant_square(move)
@@ -34,7 +34,7 @@ module Rules
     i = 1 if algebraic[1] == '5'
     i = -1 if algebraic[1] == '4'
     algebraic[1] = (algebraic[1].to_i + i).to_s
-    game_stats[:en_passant] = algebraic
+    game_stats[:en_passant] = { algebraic: algebraic, move: [move[0] - i, move[1]], piece: move }
   end
 
   def move_to_algebraic(move)

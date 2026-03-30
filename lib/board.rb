@@ -10,10 +10,16 @@ class Board
     @board = build_board(board_array)
   end
 
-  def make_move(piece, move)
+  def make_move(piece, move, game_stats)
     captured = nil
 
-    captured = board[move[0]][move[1]] unless board[move[0]][move[1]].nil?
+    if move == game_stats[:en_passant][:move]
+      en_passant_pawn = game_stats[:en_passant][:piece]
+      captured = board[en_passant_pawn[0]][en_passant_pawn[1]]
+      board[en_passant_pawn[0]][en_passant_pawn[1]] = nil
+    else
+      captured = board[move[0]][move[1]] unless board[move[0]][move[1]].nil?
+    end
     board[move[0]][move[1]] = board[piece[0]][piece[1]]
     board[piece[0]][piece[1]] = nil
 

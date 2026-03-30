@@ -63,7 +63,7 @@ class Game
     possible = possible_moves(piece, board.board, current_player.opponent)
     board.display_moves(current_player.color, possible)
     move = select_move(current_player, possible)
-    captured = board.make_move(piece, move)
+    captured = board.make_move(piece, move, game_stats)
     board.print_board(current_player.color)
     en_passant_tracker(piece, move)
     return if captured.nil?
@@ -99,7 +99,7 @@ class Game
   end
 
   def load_stats
-    { turn: load_turn(game_array[1]), castle: game_array[2], en_passant: game_array[3],
+    { turn: load_turn(game_array[1]), castle: game_array[2], en_passant: { algebraic: game_array[3], move: '-', piece: '-' },
       half_moves: game_array[4].to_i, full_moves: game_array[5].to_i }
   end
 
@@ -123,7 +123,7 @@ class Game
     puts "\e[2J\e[fWelcome to Chess in the Terminal, coded in Ruby."
     puts 'Game to be played using algebraic coordinates:'
     puts 'Enter your moves using a letter (a-h) followed by a number (1-8).'
-    puts "For example: 'd2' (to select piece) and 'd3' (move to d3)."
+    puts "For example: 'd2' (to select piece), then 'd3' (move to d3)."
     puts 'Enjoy your game :)'
     sleep 1
   end

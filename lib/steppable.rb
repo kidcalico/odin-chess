@@ -17,13 +17,13 @@ module Steppable
       end
       if file - 1 >= 0 && ((!board_array[rank + direction][file - 1].nil? && board_array[rank + direction][file - 1].color == opponent) || move_to_algebraic([
                                                                                                                                                                (rank + direction), (file - 1)
-                                                                                                                                                             ]) == game_stats[:en_passant])
+                                                                                                                                                             ]) == game_stats[:en_passant][:algebraic])
         result.push([rank + direction,
                      file - 1])
       end
       if file + 1 <= 7 && ((!board_array[rank + direction][file + 1].nil? && board_array[rank + direction][file + 1].color == opponent) || move_to_algebraic([
                                                                                                                                                                (rank + direction), (file + 1)
-                                                                                                                                                             ]) == game_stats[:en_passant])
+                                                                                                                                                             ]) == game_stats[:en_passant][:algebraic])
         result.push([rank + direction,
                      file + 1])
       end
