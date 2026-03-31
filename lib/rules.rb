@@ -16,7 +16,8 @@ module Rules
     end
   end
 
-  def castle?(color)
+  def castle_stats(stats)
+    { white: { king_side: stats[0], queen_side: stats[1] }, black: { king_side: stats[2], queen_side: stats[3] } }
   end
 
   def castle_tracker(color)

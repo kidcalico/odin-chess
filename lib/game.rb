@@ -99,7 +99,7 @@ class Game
   end
 
   def load_stats
-    { turn: load_turn(game_array[1]), castle: game_array[2], en_passant: { algebraic: game_array[3], move: '-', piece: '-' },
+    { turn: load_turn(game_array[1]), castle: castle_stats(game_array[2]), en_passant: { algebraic: game_array[3], move: '-', piece: '-' },
       half_moves: game_array[4].to_i, full_moves: game_array[5].to_i }
   end
 

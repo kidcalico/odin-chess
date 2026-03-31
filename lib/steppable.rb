@@ -58,5 +58,25 @@ module Steppable
         [rank + r_direction, file + f_direction]
       end
     end
+
+    results + king_castle(opponent)
+  end
+
+  def king_castle(opponent)
+    result = []
+    case opponent
+    when 'black'
+      player = :white
+      rank = 7
+    when 'white'
+      player = :black
+      rank = 0
+    end
+
+    if !game_stats[:castle][player][:king_side].nil? && board.board[rank][5].nil? && board.board[rank][6].nil? && !board.board[rank][7].nil? && board.board[rank][7].type == 'rook'
+      result << [rank, 6]
+    elsif !game_stats[:castle][player][:queen_side].nil? && board.board[rank][3].nil? && board.board[rank][2].nil? && board.board[rank][1].nil? && !board.board[rank][0].nil? && board.board[rank][0].type == 'rook'
+      result << [rank, 2]
+    end
   end
 end
