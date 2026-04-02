@@ -43,12 +43,12 @@ module Rules
     [(move[1] + 97).chr + (8 - move[0]).to_s].join
   end
 
-  def check?(current_color, opponent)
+  def check?(current_color)
     board.board.each_with_index do |rank, r_index|
       rank.each_with_index do |piece, f_index|
         next if piece.nil? || piece.color == current_color
 
-        moves = possible_moves([r_index, f_index], board.board, opponent)
+        moves = possible_moves([r_index, f_index], board.board, current_color)
 
         next if moves == []
 

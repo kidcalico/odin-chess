@@ -7,14 +7,14 @@ require_relative 'rules'
 class Game
   NEW_GAME = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'.freeze
   TEST_GAME = '1r6/5pp1/R1R4p/1r1pP3/2pkQPP1/7P/1P6/2K5 w - - 0 41'
-  SAVED_GAME = 'r1bqkbnr/ppp2ppp/2np4/4p3/3PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4'
+  SAVED_GAME = 'r1bqkbnr/ppp2ppp/3p4/4p3/1n1PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4'
 
   using BoardColors
   include Rules
 
   attr_accessor :game_array, :game_stats, :board, :white, :black
 
-  def initialize(fen_code = NEW_GAME)
+  def initialize(fen_code = SAVED_GAME)
     @game_array = load_fen(fen_code)
     @board = Board.new(game_array[0])
     @game_stats = load_stats
@@ -26,7 +26,7 @@ class Game
 
   def play_game
     start_game
-    until checkmate?(game_stats[:turn]) == true || stalemate?(game_stats[:turn]) == true
+    until checkmate?(game_stats[:turn]) || stalemate?(game_stats[:turn])
 
       current_player = if game_stats[:turn] == 'white'
                          white
@@ -35,7 +35,7 @@ class Game
                        end
 
       half_turn(current_player)
-      notify_check(current_player.opponent) if check?(game_stats[:turn], current_player.opponent) == true
+      # binding.pry
       game_stats[:full_moves] += 1 if current_player.color == 'black'
 
     end
@@ -44,9 +44,10 @@ class Game
 
   def half_turn(current_player)
     turn_prompt(current_player)
-    sleep 0.1
+    notify_check(current_player.color) if check?(current_player.color)
+    # sleep 0.1
     choose_and_move(current_player)
-    sleep 1
+    # sleep 1
     game_stats[:turn] = current_player.opponent
   end
 
@@ -61,21 +62,33 @@ class Game
   end
 
   def choose_and_move(current_player)
-    piece = select_piece(current_player)
-    possible = possible_moves(piece, board.board, current_player.opponent)
-    board.display_moves(current_player.color, possible)
     move = nil
+    captured = nil
+    piece = nil
+    possible = nil
+    loop do
+      piece = select_piece(current_player)
+      possible = possible_moves(piece, board.board, current_player.opponent)
+      board.display_moves(current_player.color, possible)
+
+      break unless possible == []
+
+      puts "You cannot move that #{board.board[piece[0]][piece[1]].type}."
+    end
     loop do
       move = select_move(current_player, possible)
-      break unless board.board[piece[0]][piece[1]].type == 'king' && check_square?(move,
-                                                                                   current_player.opponent) == true
 
-      puts 'You cannot move into check.'
+      captured = board.make_move(piece, move, game_stats)
+
+      break unless check?(current_player.color)
+
+      board.reset_move(piece, move, captured)
+
+      puts 'That puts you in check! Try another move.'
     end
-    captured = board.make_move(piece, move, game_stats)
     board.print_board(current_player.color)
-    # p board.board[move[0]][move[1]].possible(board.board, current_player.opponent, game_stats)
     en_passant_tracker(piece, move)
+
     return if captured.nil?
 
     puts "#{current_player.color.capitalize} captured a #{current_player.opponent} #{captured.type}!"
