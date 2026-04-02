@@ -1,11 +1,18 @@
+require_relative 'rules'
+
 class Piece
-  attr_reader :color, :type, :symbol, :location
+  include Rules
+
+  attr_reader :color, :type, :symbol
+  attr_accessor :location, :game_stats
 
   def initialize(type, location)
     @color = which_color(type)
     @type = which_type(type.downcase)
     @symbol = to_symbol(@type)
     @location = location
+    @possible = []
+    @game_stats = nil
   end
 
   def which_color(type)
@@ -34,5 +41,10 @@ class Piece
     when 'queen' then "\u265B"
     when 'king' then "\u265A"
     end
+  end
+
+  def possible(board_array, opponent, stats)
+    @game_stats = stats
+    possible_moves(location, board_array, opponent)
   end
 end

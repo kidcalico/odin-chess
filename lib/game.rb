@@ -18,6 +18,8 @@ class Game
     @game_array = load_fen(fen_code)
     @board = Board.new(game_array[0])
     @game_stats = load_stats
+    # board_with_moves
+    # p board.board
     @white = Player.new('w')
     @black = Player.new('b')
   end
@@ -25,7 +27,6 @@ class Game
   def play_game
     start_game
     until checkmate?(game_stats[:turn]) == true || stalemate?(game_stats[:turn]) == true
-      notify_check if check?(game_stats[:turn]) == true
 
       current_player = if game_stats[:turn] == 'white'
                          white
@@ -34,6 +35,7 @@ class Game
                        end
 
       half_turn(current_player)
+      notify_check(current_player.opponent) if check?(game_stats[:turn], current_player.opponent) == true
       game_stats[:full_moves] += 1 if current_player.color == 'black'
 
     end
@@ -62,9 +64,17 @@ class Game
     piece = select_piece(current_player)
     possible = possible_moves(piece, board.board, current_player.opponent)
     board.display_moves(current_player.color, possible)
-    move = select_move(current_player, possible)
+    move = nil
+    loop do
+      move = select_move(current_player, possible)
+      break unless board.board[piece[0]][piece[1]].type == 'king' && check_square?(move,
+                                                                                   current_player.opponent) == true
+
+      puts 'You cannot move into check.'
+    end
     captured = board.make_move(piece, move, game_stats)
     board.print_board(current_player.color)
+    # p board.board[move[0]][move[1]].possible(board.board, current_player.opponent, game_stats)
     en_passant_tracker(piece, move)
     return if captured.nil?
 
@@ -126,6 +136,20 @@ class Game
     puts "For example: 'd2' (to select piece), then 'd3' (move to d3)."
     puts 'Enjoy your game :)'
     sleep 1
+  end
+
+  def board_with_moves
+    board.board.each do |rank|
+      rank.each do |file|
+        next if file.nil?
+
+        file.possible = if file.color == 'white'
+                          possible_moves(file.location, board.board, 'black')
+                        else
+                          possible_moves(file.location, board.board, 'black')
+                        end
+      end
+    end
   end
 
   def end_game

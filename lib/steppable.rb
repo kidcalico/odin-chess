@@ -48,7 +48,7 @@ module Steppable
     rank = location[0]
     file = location[1]
 
-    results = directions.map do |direction|
+    directions.map do |direction|
       r_direction = direction[0]
       f_direction = direction[1]
 
@@ -59,7 +59,9 @@ module Steppable
       end
     end
 
-    results + king_castle(opponent)
+    # castle = king_castle(opponent)
+
+    # return results + castle unless castle.nil?
   end
 
   def king_castle(opponent)

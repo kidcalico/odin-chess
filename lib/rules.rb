@@ -4,6 +4,7 @@ require_relative 'steppable'
 module Rules
   include Slideable
   include Steppable
+  using BoardColors
 
   def possible_moves(location, board_array, opponent)
     case board_array[location[0]][location[1]].type
@@ -42,8 +43,45 @@ module Rules
     [(move[1] + 97).chr + (8 - move[0]).to_s].join
   end
 
-  def check?(color)
+  def check?(current_color, opponent)
+    board.board.each_with_index do |rank, r_index|
+      rank.each_with_index do |piece, f_index|
+        next if piece.nil? || piece.color == current_color
+
+        moves = possible_moves([r_index, f_index], board.board, opponent)
+
+        next if moves == []
+
+        moves.any? do |move|
+          next if move.nil?
+          next if board.board[move[0]][move[1]].nil?
+
+          if board.board[move[0]][move[1]].type == 'king' && board.board[move[0]][move[1]].color == current_color
+            return true
+          end
+        end
+      end
+    end
     false
+  end
+
+  def check_square?(square, opponent)
+    board.board.compact.each_with_index do |rank, r_index|
+      rank.each_with_index do |piece, f_index|
+        next if piece.nil? || piece.color == opponent
+
+        moves = possible_moves([r_index, f_index], board.board, opponent)
+
+        next if moves == []
+
+        return true if moves.include?(square)
+      end
+    end
+    false
+  end
+
+  def notify_check(opponent)
+    puts "Warning! The #{opponent} king is in check.".red_piece
   end
 
   def checkmate?(color)

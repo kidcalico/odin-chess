@@ -21,9 +21,20 @@ class Board
       captured = board[move[0]][move[1]] unless board[move[0]][move[1]].nil?
     end
     board[move[0]][move[1]] = board[piece[0]][piece[1]]
+    board[move[0]][move[1]].location = move
+
     board[piece[0]][piece[1]] = nil
 
     captured
+  end
+
+  def reset_move(piece, move, captured)
+    board[piece[0]][piece[1]] = board[move[0]][move[1]]
+    board[piece[0]][piece[1]].location = piece
+    board[move[0]][move[1]] = captured
+    return if captured.nil?
+
+    board[move[0]][move[1]].location = move
   end
 
   def build_board(board_array)
