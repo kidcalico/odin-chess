@@ -173,8 +173,3 @@ class Game
   def end_game
   end
 end
-
-# test = Game.new
-# # p test.board.board
-# # p test.find_king('white')
-# test.play_game

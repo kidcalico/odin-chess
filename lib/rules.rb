@@ -91,7 +91,7 @@ module Rules
   def stalemate?(current_color)
     king = find_king(current_color)
     moves = possible_moves(king, board.board, current_color)
-    moves.all? { |move| check_square?(move, current_color) }
+    moves.compact.all? { |move| check_square?(move, current_color) }
   end
 
   def find_king(color)
