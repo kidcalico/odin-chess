@@ -84,7 +84,9 @@ module Rules
     puts "Warning! The #{opponent} king is in check.".red_piece
   end
 
-  def checkmate?(color)
+  def checkmate?(current_color)
+    return true if check?(current_color) && stalemate?(current_color)
+
     false
   end
 
