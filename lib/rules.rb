@@ -97,12 +97,8 @@ module Rules
   end
 
   def find_king(color)
-    location = nil
-    board.board.each do |rank|
-      rank.each do |piece|
-        location = piece.location if !piece.nil? && piece.type == 'king' && piece.color == color
-      end
+    board.board.flatten.each do |piece|
+      return piece.location if !piece.nil? && piece.type == 'king' && piece.color == color
     end
-    location
   end
 end
