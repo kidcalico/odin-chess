@@ -21,7 +21,23 @@ module Rules
     { white: { king_side: stats[0], queen_side: stats[1] }, black: { king_side: stats[2], queen_side: stats[3] } }
   end
 
-  def castle_tracker(color)
+  def castle_tracker(origin, move)
+    piece = board.board[move[0]][move[1]]
+
+    if piece.type == 'king'
+      if piece.color == 'white'
+        game_stats[:castle][:white][:king_side] = nil
+        game_stats[:castle][:white][:queen_side] = nil
+      else
+        game_stats[:castle][:black][:king_side] = nil
+        game_stats[:castle][:black][:queen_side] = nil
+      end
+    elsif piece.type == 'rook'
+      game_stats[:castle][:white][:king_side] = nil if origin == [7, 7]
+      game_stats[:castle][:white][:queen_side] = nil if origin == [7, 0]
+      game_stats[:castle][:black][:king_side] = nil if origin == [0, 7]
+      game_stats[:castle][:black][:queen_side] = nil if origin == [0, 0]
+    end
   end
 
   def en_passant_tracker(piece, move)
@@ -82,8 +98,8 @@ module Rules
   end
 
   def find_king(color)
-    board.board.flatten.each do |piece|
-      return piece.location if !piece.nil? && piece.type == 'king' && piece.color == color
+    board.board.flatten.compact.each do |piece|
+      return piece.location if piece.type == 'king' && piece.color == color
     end
   end
 end
