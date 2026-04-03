@@ -8,13 +8,14 @@ class Game
   NEW_GAME = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'.freeze
   TEST_GAME = '1r6/5pp1/R1R4p/1r1pP3/2pkQPP1/7P/1P6/2K5 w - - 0 41'
   SAVED_GAME = 'r1bqkbnr/ppp2ppp/3p4/4p3/1n1PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4'
+  STALE = '8/8/8/8/8/3r1r2/r7/4K3 w - - 0 1'
 
   using BoardColors
   include Rules
 
   attr_accessor :game_array, :game_stats, :board, :white, :black
 
-  def initialize(fen_code = SAVED_GAME)
+  def initialize(fen_code = STALE)
     @game_array = load_fen(fen_code)
     @board = Board.new(game_array[0])
     @game_stats = load_stats
@@ -26,20 +27,24 @@ class Game
 
   def play_game
     start_game
-    until checkmate?(game_stats[:turn]) || stalemate?(game_stats[:turn])
-
-      current_player = if game_stats[:turn] == 'white'
-                         white
-                       else
-                         black
-                       end
+    current_player = set_current_player
+    until checkmate?(current_player.color) || stalemate?(current_player.color)
 
       half_turn(current_player)
       # binding.pry
       game_stats[:full_moves] += 1 if current_player.color == 'black'
 
+      current_player = set_current_player
     end
     end_game
+  end
+
+  def set_current_player
+    current_player = if game_stats[:turn] == 'white'
+                       white
+                     else
+                       black
+                     end
   end
 
   def half_turn(current_player)
@@ -169,6 +174,7 @@ class Game
   end
 end
 
-test = Game.new
-p test.game_stats
-test.play_game
+# test = Game.new
+# # p test.board.board
+# # p test.find_king('white')
+# test.play_game

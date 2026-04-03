@@ -65,12 +65,12 @@ module Rules
     false
   end
 
-  def check_square?(square, opponent)
-    board.board.compact.each_with_index do |rank, r_index|
+  def check_square?(square, current_color)
+    board.board.each_with_index do |rank, r_index|
       rank.each_with_index do |piece, f_index|
-        next if piece.nil? || piece.color == opponent
+        next if piece.nil? || piece.color == current_color
 
-        moves = possible_moves([r_index, f_index], board.board, opponent)
+        moves = possible_moves([r_index, f_index], board.board, current_color)
 
         next if moves == []
 
@@ -88,7 +88,19 @@ module Rules
     false
   end
 
-  def stalemate?(color)
-    false
+  def stalemate?(current_color)
+    king = find_king(current_color)
+    moves = possible_moves(king, board.board, current_color)
+    moves.all? { |move| check_square?(move, current_color) }
+  end
+
+  def find_king(color)
+    location = nil
+    board.board.each do |rank|
+      rank.each do |piece|
+        location = piece.location if !piece.nil? && piece.type == 'king' && piece.color == color
+      end
+    end
+    location
   end
 end
