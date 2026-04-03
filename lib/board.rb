@@ -17,6 +17,8 @@ class Board
       en_passant_pawn = game_stats[:en_passant][:piece]
       captured = board[en_passant_pawn[0]][en_passant_pawn[1]]
       board[en_passant_pawn[0]][en_passant_pawn[1]] = nil
+    elsif board[piece[0]][piece[1]].type == 'king' && (piece[1] - move[1]).abs == 2
+      castle_wrap(move, game_stats)
     else
       captured = board[move[0]][move[1]] unless board[move[0]][move[1]].nil?
     end
@@ -26,6 +28,15 @@ class Board
     board[piece[0]][piece[1]] = nil
 
     captured
+  end
+
+  def castle_wrap(move, game_stats)
+    case move
+    when [0, 2] then make_move([0, 0], [0, 3], game_stats)
+    when [0, 6] then make_move([0, 7], [0, 5], game_stats)
+    when [7, 2] then make_move([7, 0], [7, 3], game_stats)
+    when [7, 6] then make_move([7, 7], [7, 5], game_stats)
+    end
   end
 
   def reset_move(piece, move, captured)
