@@ -8,31 +8,30 @@ class Game
   NEW_GAME = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'.freeze
   TEST_GAME = '1r6/5pp1/R1R4p/1r1pP3/2pkQPP1/7P/1P6/2K5 w - - 0 41'
   SAVED_GAME = 'r1bqkbnr/ppp2ppp/3p4/4p3/1n1PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4'
-  STALE = '8/8/8/8/8/3r1r2/r7/4K3 w - - 0 1'
-  STALEE = '5k2/8/8/8/8/2r5/r4r2/4K3 b - - 0 1'
+  STALE = '5k2/8/8/8/8/2r5/r4r2/4K3 b - - 0 1'
+  EN_PASSANT = 'r1bqkbnr/ppp1pppp/8/2Q1P1B1/1nBP4/8/PPP2PPP/RN2K1NR b KQkq - 2 4'
+  CASTLE = 'r1bqk2r/ppp1pppp/3bN3/2Q1P1B1/2BP4/2n3n1/PPP2PPP/R3K2R w KQkq - 2 4'
 
   using BoardColors
   include Rules
 
   attr_accessor :game_array, :game_stats, :board, :white, :black
 
-  def initialize(fen_code = STALEE)
+  def initialize(fen_code = NEW_GAME)
     @game_array = load_fen(fen_code)
     @board = Board.new(game_array[0])
     @game_stats = load_stats
-    # board_with_moves
-    # p board.board
     @white = Player.new('w')
     @black = Player.new('b')
   end
 
   def play_game
     start_game
+    board_with_moves
     current_player = set_current_player
     until stalemate?(current_player.color) || checkmate?(current_player.color)
 
       half_turn(current_player)
-      # binding.pry
       game_stats[:full_moves] += 1 if current_player.color == 'black'
 
       current_player = set_current_player
@@ -66,32 +65,34 @@ class Game
   end
 
   def choose_and_move(current_player)
-    move = nil
     captured = nil
-    piece = nil
-    possible = nil
     loop do
       piece = select_piece(current_player)
       possible = possible_moves(piece, board.board, current_player.opponent)
       board.display_moves(current_player.color, possible)
 
-      break unless possible == []
+      if possible == []
+        puts "You cannot move that #{board.board[piece[0]][piece[1]].type}."
+        next
+      end
 
-      puts "You cannot move that #{board.board[piece[0]][piece[1]].type}."
-    end
-    loop do
       move = select_move(current_player, possible)
 
       captured = board.make_move(piece, move, game_stats)
 
-      break unless check?(current_player.color)
+      unless check?(current_player.color)
+        en_passant_tracker(piece, move)
+        castle_tracker(piece, move)
+        board_with_moves
+        break
+      end
 
       board.reset_move(piece, move, captured)
 
+      board.print_board(current_player.color)
       puts 'That puts you in check! Try another move.'
     end
     board.print_board(current_player.color)
-    en_passant_tracker(piece, move)
 
     return if captured.nil?
 
@@ -156,16 +157,14 @@ class Game
   end
 
   def board_with_moves
-    board.board.each do |rank|
-      rank.each do |file|
-        next if file.nil?
+    board.board.flatten.each do |square|
+      next if square.nil?
 
-        file.possible = if file.color == 'white'
-                          possible_moves(file.location, board.board, 'black')
+      square.possible = if square.color == 'white'
+                          possible_moves(square.location, board.board, 'black')
                         else
-                          possible_moves(file.location, board.board, 'black')
+                          possible_moves(square.location, board.board, 'white')
                         end
-      end
     end
   end
 
