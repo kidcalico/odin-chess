@@ -65,21 +65,6 @@ module Rules
     false
   end
 
-  def check_square?(square, current_color)
-    board.board.each_with_index do |rank, r_index|
-      rank.each_with_index do |piece, f_index|
-        next if piece.nil? || piece.color == current_color
-
-        moves = possible_moves([r_index, f_index], board.board, current_color)
-
-        next if moves == []
-
-        return true if moves.include?(square)
-      end
-    end
-    false
-  end
-
   def notify_check(opponent)
     puts "Warning! The #{opponent} king is in check.".red_piece
   end
