@@ -48,7 +48,7 @@ module Steppable
     rank = location[0]
     file = location[1]
 
-    directions.map do |direction|
+    directions.map! do |direction|
       r_direction = direction[0]
       f_direction = direction[1]
 
@@ -59,9 +59,11 @@ module Steppable
       end
     end
 
-    # castle = king_castle(opponent)
+    castle = king_castle(opponent)
 
-    # return results + castle unless castle.nil?
+    directions += castle unless castle.nil?
+
+    directions
   end
 
   def king_castle(opponent)
@@ -75,10 +77,29 @@ module Steppable
       rank = 0
     end
 
-    if !game_stats[:castle][player][:king_side].nil? && board.board[rank][5].nil? && board.board[rank][6].nil? && !board.board[rank][7].nil? && board.board[rank][7].type == 'rook'
+    if !game_stats[:castle][player][:king_side].nil? && board.board[rank][5].nil? &&
+       board.board[rank][6].nil? && !check_square?([rank, 5], player.to_s)
       result << [rank, 6]
-    elsif !game_stats[:castle][player][:queen_side].nil? && board.board[rank][3].nil? && board.board[rank][2].nil? && board.board[rank][1].nil? && !board.board[rank][0].nil? && board.board[rank][0].type == 'rook'
+    end
+    if !game_stats[:castle][player][:queen_side].nil? && board.board[rank][3].nil? &&
+       board.board[rank][2].nil? && board.board[rank][1].nil? && !check_square?([rank, 3], player.to_s)
       result << [rank, 2]
     end
+    result
+  end
+
+  def check_square?(square, current_color)
+    board.board.each_with_index do |rank, r_index|
+      rank.each_with_index do |piece, f_index|
+        next if piece.nil? || piece.color == current_color
+
+        moves = possible_moves([r_index, f_index], board.board, current_color)
+
+        next if moves == []
+
+        return true if moves.include?(square)
+      end
+    end
+    false
   end
 end
