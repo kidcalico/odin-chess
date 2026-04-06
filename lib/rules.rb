@@ -86,7 +86,6 @@ module Rules
   end
 
   def checkmate?(current_player)
-    # binding.pry
     return true if check?(current_player.color) && mate?(current_player)
 
     false
@@ -99,24 +98,20 @@ module Rules
   end
 
   def cannot_move?(current_player)
-    binding.pry
-    current_pieces = board.board.flatten.map { |piece| piece if !piece.nil? && piece.color == current_player.color }
-    current_pieces.compact.all? { |piece| piece.possible == [] }
+    current_pieces = board.board.flatten.filter_map { |piece| piece if piece && piece.color == current_player.color }
+    current_pieces.reject! { |piece| piece.type == 'king' }
+    current_pieces.all? { |piece| piece.possible == [] }
   end
 
   def mate?(current_player)
     king_location = find_king(current_player.color)
     moves = board.board[king_location[0]][king_location[1]].possible
 
-    moves.compact.all? { |move| check_square?(move, current_player.color) || covered?(move, current_player) }
-  end
-
-  def covered?(location, current_player)
-    stub_board = Marshal.load(Marshal.dump(board.board))
-    stub_board[location[0]][location[1]] = nil
-    board_with_moves(stub_board)
-    stub_board.flatten.compact.any? do |piece|
-      piece.color == current_player.opponent && piece.possible.include?(location)
+    moves.compact.all? do |move|
+      captured = board.make_move(king_location, move, game_stats)
+      boolean = check?(current_player.color)
+      board.reset_move(king_location, move, captured)
+      boolean
     end
   end
 
