@@ -59,14 +59,14 @@ module Steppable
       end
     end
 
-    castle = king_castle(opponent, game_stats)
+    castle = king_castle(opponent, board_array, game_stats)
 
     directions += castle unless castle.nil?
 
     directions
   end
 
-  def king_castle(opponent, game_stats)
+  def king_castle(opponent, board_array, game_stats)
     result = []
     case opponent
     when 'black'
@@ -77,19 +77,19 @@ module Steppable
       rank = 0
     end
 
-    if !game_stats[:castle][player][:king_side].nil? && board.board[rank][5].nil? &&
-       board.board[rank][6].nil? && !check_square?([rank, 5], player.to_s)
+    if !game_stats[:castle][player][:king_side].nil? && board_array[rank][5].nil? &&
+       board_array[rank][6].nil? && !check_square?([rank, 5], board_array, player.to_s)
       result << [rank, 6]
     end
-    if !game_stats[:castle][player][:queen_side].nil? && board.board[rank][3].nil? &&
-       board.board[rank][2].nil? && board.board[rank][1].nil? && !check_square?([rank, 3], player.to_s)
+    if !game_stats[:castle][player][:queen_side].nil? && board_array[rank][3].nil? &&
+       board_array[rank][2].nil? && board_array[rank][1].nil? && !check_square?([rank, 3], board_array, player.to_s)
       result << [rank, 2]
     end
     result
   end
 
-  def check_square?(square, current_color)
-    board.board.flatten.compact.any? do |piece|
+  def check_square?(square, board_array, current_color)
+    board_array.flatten.compact.any? do |piece|
       next if piece.color == current_color || piece.possible == []
 
       piece.possible.include?(square)
