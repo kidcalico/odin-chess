@@ -21,12 +21,10 @@ class Board
       convert_pawn(piece, 'black')
     elsif board[piece[0]][piece[1]].type == 'pawn' && board[piece[0]][piece[1]].color == 'white' && move[0] == 0
       convert_pawn(piece, 'white')
-      captured = board[move[0]][move[1]] unless board[move[0]][move[1]].nil?
     elsif board[piece[0]][piece[1]].type == 'king' && (piece[1] - move[1]).abs == 2
       castle_wrap(move, game_stats)
-    else
-      captured = board[move[0]][move[1]] unless board[move[0]][move[1]].nil?
     end
+    captured = board[move[0]][move[1]] unless board[move[0]][move[1]].nil?
     board[move[0]][move[1]] = board[piece[0]][piece[1]]
     board[move[0]][move[1]].location = move
 
