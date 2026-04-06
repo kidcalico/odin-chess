@@ -11,13 +11,15 @@ class Game
   STALE = '5k2/8/8/8/8/2r5/r4r2/4K3 b - - 0 1'
   EN_PASSANT = 'r1bqkbnr/ppp1pppp/8/2Q1P1B1/1nBP4/8/PPP2PPP/RN2K1NR b KQkq - 2 4'
   CASTLE = 'r1bqk2r/ppp1pppp/3bN3/2Q1P1B1/2BP4/2n3n1/PPP2PPP/R3K2R w KQkq - 2 4'
+  FOOLS_MATE = 'r1bqkbnr/ppp2ppp/2np4/4p3/2B5/4PQ2/PPPP1PPP/RNB1K1NR w KQkq - 0 1'
+  FOOL = 'r1bqkbnr/ppppp1pp/5p2/n7/2B5/4PQ2/PPPP1PPP/RNB1K1NR w KQkq - 0 1'
 
   using BoardColors
   include Rules
 
   attr_accessor :game_array, :game_stats, :board, :white, :black
 
-  def initialize(fen_code = NEW_GAME)
+  def initialize(fen_code = STALE)
     @game_array = load_fen(fen_code)
     @board = Board.new(game_array[0])
     @game_stats = load_stats
@@ -27,9 +29,9 @@ class Game
 
   def play_game
     start_game
-    board_with_moves
+    board_with_moves(board.board)
     current_player = set_current_player
-    until stalemate?(current_player.color) || checkmate?(current_player.color)
+    until checkmate?(current_player) || stalemate?(current_player)
 
       half_turn(current_player)
       game_stats[:full_moves] += 1 if current_player.color == 'black'
@@ -83,7 +85,7 @@ class Game
       unless check?(current_player.color)
         en_passant_tracker(piece, move)
         castle_tracker(piece, move)
-        board_with_moves
+        board_with_moves(board.board)
         break
       end
 
@@ -156,14 +158,14 @@ class Game
     sleep 1
   end
 
-  def board_with_moves
-    board.board.flatten.each do |square|
+  def board_with_moves(board)
+    board.flatten.each do |square|
       next if square.nil?
 
       square.possible = if square.color == 'white'
-                          possible_moves(square.location, board.board, 'black')
+                          possible_moves(square.location, board, 'black')
                         else
-                          possible_moves(square.location, board.board, 'white')
+                          possible_moves(square.location, board, 'white')
                         end
     end
   end

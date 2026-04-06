@@ -85,16 +85,39 @@ module Rules
     puts "Warning! The #{opponent} king is in check.".red_piece
   end
 
-  def checkmate?(current_color)
-    return true if check?(current_color) && stalemate?(current_color)
+  def checkmate?(current_player)
+    # binding.pry
+    return true if check?(current_player.color) && mate?(current_player)
 
     false
   end
 
-  def stalemate?(current_color)
-    king = find_king(current_color)
-    moves = possible_moves(king, board.board, current_color)
-    moves.compact.all? { |move| check_square?(move, current_color) }
+  def stalemate?(current_player)
+    return true if mate?(current_player) && cannot_move?(current_player)
+
+    false
+  end
+
+  def cannot_move?(current_player)
+    binding.pry
+    current_pieces = board.board.flatten.map { |piece| piece if !piece.nil? && piece.color == current_player.color }
+    current_pieces.compact.all? { |piece| piece.possible == [] }
+  end
+
+  def mate?(current_player)
+    king_location = find_king(current_player.color)
+    moves = board.board[king_location[0]][king_location[1]].possible
+
+    moves.compact.all? { |move| check_square?(move, current_player.color) || covered?(move, current_player) }
+  end
+
+  def covered?(location, current_player)
+    stub_board = Marshal.load(Marshal.dump(board.board))
+    stub_board[location[0]][location[1]] = nil
+    board_with_moves(stub_board)
+    stub_board.flatten.compact.any? do |piece|
+      piece.color == current_player.opponent && piece.possible.include?(location)
+    end
   end
 
   def find_king(color)
