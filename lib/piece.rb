@@ -41,4 +41,15 @@ class Piece
     when 'king' then "\u265A"
     end
   end
+
+  def fen_initial
+    init = if type == 'knight'
+             'n'
+           else
+             type[0]
+           end
+    return init.upcase if color == 'white'
+
+    init
+  end
 end
