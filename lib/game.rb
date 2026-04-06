@@ -13,13 +13,14 @@ class Game
   CASTLE = 'r1bqk2r/ppp1pppp/3bN3/2Q1P1B1/2BP4/2n3n1/PPP2PPP/R3K2R w KQkq - 2 4'
   FOOLS_MATE = 'r1bqkbnr/ppp2ppp/2np4/4p3/2B5/4PQ2/PPPP1PPP/RNB1K1NR w KQkq - 0 1'
   FOOL = 'r1bqkbnr/ppppp1pp/5p2/n7/2B5/4PQ2/PPPP1PPP/RNB1K1NR w KQkq - 0 1'
+  PAWN_CONVERSION = '2n3k1/3P4/8/8/8/8/6p1/1K6 w - - 0 1'
 
   using BoardColors
   include Rules
 
   attr_accessor :game_array, :game_stats, :board, :white, :black
 
-  def initialize(fen_code = STALE)
+  def initialize(fen_code = PAWN_CONVERSION)
     @game_array = load_fen(fen_code)
     @board = Board.new(game_array[0])
     @game_stats = load_stats
@@ -31,7 +32,7 @@ class Game
     start_game
     board_with_moves(board.board)
     current_player = set_current_player
-    until checkmate?(current_player) || stalemate?(current_player)
+    until checkmate?(current_player, game_stats) || stalemate?(current_player, game_stats)
 
       half_turn(current_player)
       game_stats[:full_moves] += 1 if current_player.color == 'black'
@@ -49,10 +50,10 @@ class Game
 
   def half_turn(current_player)
     turn_prompt(current_player)
-    notify_check(current_player.color) if check?(current_player.color)
-    # sleep 0.1
+    notify_check(current_player.color) if check?(current_player.color, board.board, game_stats)
+    sleep 0.1
     choose_and_move(current_player)
-    # sleep 1
+    sleep 0.5
     game_stats[:turn] = current_player.opponent
   end
 
@@ -70,7 +71,7 @@ class Game
     captured = nil
     loop do
       piece = select_piece(current_player)
-      possible = possible_moves(piece, board.board, current_player.opponent)
+      possible = possible_moves(piece, board.board, current_player.opponent, game_stats)
       board.display_moves(current_player.color, possible)
 
       if possible == []
@@ -82,9 +83,9 @@ class Game
 
       captured = board.make_move(piece, move, game_stats)
 
-      unless check?(current_player.color)
-        en_passant_tracker(piece, move)
-        castle_tracker(piece, move)
+      unless check?(current_player.color, board.board, game_stats)
+        en_passant_tracker(piece, move, game_stats)
+        castle_tracker(piece, move, game_stats)
         board_with_moves(board.board)
         break
       end
@@ -163,15 +164,15 @@ class Game
       next if square.nil?
 
       square.possible = if square.color == 'white'
-                          possible_moves(square.location, board, 'black')
+                          possible_moves(square.location, board, 'black', game_stats)
                         else
-                          possible_moves(square.location, board, 'white')
+                          possible_moves(square.location, board, 'white', game_stats)
                         end
     end
   end
 
   def end_game(current_player)
-    if check?(current_player.color)
+    if check?(current_player.color, board.board, game_stats)
       puts "#{current_player.opponent.capitalize} is the winner! Congratulations!!!"
     else
       puts 'Stalemate. Maybe you want a rematch?'

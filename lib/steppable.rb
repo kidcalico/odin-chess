@@ -1,5 +1,5 @@
 module Steppable
-  def pawn_moves(location, board_array, opponent)
+  def pawn_moves(location, board_array, opponent, game_stats)
     result = []
     rank = location[0]
     file = location[1]
@@ -43,7 +43,7 @@ module Steppable
     end.compact
   end
 
-  def king_moves(location, board_array, opponent)
+  def king_moves(location, board_array, opponent, game_stats)
     directions = [[-1, 1], [1, 1], [1, -1], [-1, -1], [1, 0], [-1, 0], [0, 1], [0, -1]]
     rank = location[0]
     file = location[1]
@@ -59,14 +59,14 @@ module Steppable
       end
     end
 
-    castle = king_castle(opponent)
+    castle = king_castle(opponent, game_stats)
 
     directions += castle unless castle.nil?
 
     directions
   end
 
-  def king_castle(opponent)
+  def king_castle(opponent, game_stats)
     result = []
     case opponent
     when 'black'
