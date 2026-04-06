@@ -17,6 +17,11 @@ class Board
       en_passant_pawn = game_stats[:en_passant][:piece]
       captured = board[en_passant_pawn[0]][en_passant_pawn[1]]
       board[en_passant_pawn[0]][en_passant_pawn[1]] = nil
+    elsif board[piece[0]][piece[1]].type == 'pawn' && board[piece[0]][piece[1]].color == 'black' && move[0] == 7
+      convert_pawn(piece, 'black')
+    elsif board[piece[0]][piece[1]].type == 'pawn' && board[piece[0]][piece[1]].color == 'white' && move[0] == 0
+      convert_pawn(piece, 'white')
+      captured = board[move[0]][move[1]] unless board[move[0]][move[1]].nil?
     elsif board[piece[0]][piece[1]].type == 'king' && (piece[1] - move[1]).abs == 2
       castle_wrap(move, game_stats)
     else
@@ -28,6 +33,24 @@ class Board
     board[piece[0]][piece[1]] = nil
 
     captured
+  end
+
+  def convert_pawn(location, color)
+    loop do
+      puts 'Convert to queen [q], rook [r], bishop [b] or knight [k]?'
+      choice = gets.chomp
+      next puts 'Please type [q], [r], [b], or [k]' unless %w[q r b k].include?(choice[0].downcase)
+
+      case choice[0].downcase
+      when 'q' then piece = 'q'
+      when 'r' then piece = 'r'
+      when 'b' then piece = 'b'
+      when 'k' then piece = 'n'
+      end
+      piece = piece.upcase if color == 'white'
+      board[location[0]][location[1]] = Piece.new(piece, location)
+      break
+    end
   end
 
   def castle_wrap(move, game_stats)
