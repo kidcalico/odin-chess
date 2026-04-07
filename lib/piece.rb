@@ -1,7 +1,7 @@
 require_relative 'rules'
 
 class Piece
-  include Rules
+  # include Rules
 
   attr_reader :color, :type, :symbol
   attr_accessor :location, :possible
