@@ -1,5 +1,6 @@
 require_relative 'slideable'
 require_relative 'steppable'
+require_relative 'board_colors'
 
 module Rules
   include Slideable
