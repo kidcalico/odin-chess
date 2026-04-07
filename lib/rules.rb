@@ -99,7 +99,7 @@ module Rules
   end
 
   def stalemate?(current_player, game_stats)
-    return true if mate?(current_player, game_stats) && cannot_move?(current_player)
+    return true if (mate?(current_player, game_stats) && cannot_move?(current_player)) || game_stats[:half_moves] == 50
 
     false
   end
