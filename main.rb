@@ -2,7 +2,31 @@ require 'rubocop'
 require 'pry-byebug'
 require_relative 'lib/game'
 
-test = Game.new
+include SaveLoad
 
-test.board.print_board_white
-test.board.print_board_black
+print "\e[2J\e[f"
+puts 'Welcome to Chess in the Command Line, coded by Kid Calico using Ruby.'
+puts 'Please select from the following options:'
+puts '[N]ew game'
+puts '[L]oad a saved game'
+puts 'Enter [F]EN (Forsyth Edwards Notation - please ensure it is accurate and complete).'
+game = Game.new
+loop do
+  print "Please type 'N', 'L' or 'F': "
+  choice = gets.chomp
+  if choice[0].upcase == 'N'
+    game.play_game
+    break
+  elsif choice[0].upcase == 'L'
+    game.load_game
+    break
+  elsif choice[0].upcase == 'F'
+    print 'Enter FEN code: '
+    fen = gets.chomp
+    game = Game.new(fen)
+    game.play_game
+    break
+  else
+    puts 'Invalid input, please try again.'
+  end
+end

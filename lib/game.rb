@@ -3,24 +3,18 @@ require_relative 'board_colors'
 require_relative 'board'
 require_relative 'player'
 require_relative 'rules'
+require_relative 'save_load'
 
 class Game
   NEW_GAME = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'.freeze
-  TEST_GAME = '1r6/5pp1/R1R4p/1r1pP3/2pkQPP1/7P/1P6/2K5 w - - 0 41'
-  SAVED_GAME = 'r1bqkbnr/ppp2ppp/3p4/4p3/1n1PP3/5N2/PPP2PPP/RNBQKB1R w KQkq - 2 4'
-  STALE = '5k2/8/8/8/8/2r5/r4r2/4K3 b - - 0 1'
-  EN_PASSANT = 'r1bqkbnr/ppp1pppp/8/2Q1P1B1/1nBP4/8/PPP2PPP/RN2K1NR b KQkq - 2 4'
-  CASTLE = 'r1bqk2r/ppp1pppp/3bN3/2Q1P1B1/2BP4/2n3n1/PPP2PPP/R3K2R w KQkq - 2 4'
-  FOOLS_MATE = 'r1bqkbnr/ppp2ppp/2np4/4p3/2B5/4PQ2/PPPP1PPP/RNB1K1NR w KQkq - 0 1'
-  FOOL = 'r1bqkbnr/ppppp1pp/5p2/n7/2B5/4PQ2/PPPP1PPP/RNB1K1NR w KQkq - 0 1'
-  PAWN_CONVERSION = '2n3k1/3P4/8/8/8/8/6p1/1K6 w - - 0 1'
 
   using BoardColors
   include Rules
+  include SaveLoad
 
   attr_accessor :game_array, :game_stats, :board, :white, :black
 
-  def initialize(fen_code = PAWN_CONVERSION)
+  def initialize(fen_code = NEW_GAME)
     @game_array = load_fen(fen_code)
     @board = Board.new(game_array[0])
     @game_stats = load_stats
@@ -35,6 +29,7 @@ class Game
     until checkmate?(current_player, game_stats) || stalemate?(current_player, game_stats)
 
       half_turn(current_player)
+      print "\e[2J\e[f"
       game_stats[:full_moves] += 1 if current_player.color == 'black'
 
       current_player = set_current_player
@@ -51,9 +46,9 @@ class Game
   def half_turn(current_player)
     turn_prompt(current_player)
     notify_check(current_player.color) if check?(current_player.color, board.board, game_stats)
-    sleep 0.1
+    sleep 0.3
     choose_and_move(current_player)
-    sleep 0.5
+    sleep 1
     game_stats[:turn] = current_player.opponent
   end
 
@@ -71,6 +66,7 @@ class Game
     captured = nil
     loop do
       piece = select_piece(current_player)
+      save_game(board.board, game_stats) if piece == 'save'
       possible = possible_moves(piece, board.board, current_player.opponent, game_stats)
       board.display_moves(current_player.color, possible)
 
@@ -106,6 +102,7 @@ class Game
   def select_piece(current_player)
     loop do
       piece = current_player.get_input('piece')
+      return piece if piece == 'save'
       unless board.board[piece[0]][piece[1]].nil? || board.board[piece[0]][piece[1]].color != current_player.color
         return piece
       end
@@ -151,10 +148,13 @@ class Game
   end
 
   def start_game
-    puts "\e[2J\e[fWelcome to Chess in the Terminal, coded in Ruby."
+    print "\e[2J\e[f"
+    puts 'Welcome to Chess in the Terminal, coded in Ruby.'
     puts 'Game to be played using algebraic coordinates:'
     puts 'Enter your moves using a letter (a-h) followed by a number (1-8).'
     puts "For example: 'd2' (to select piece), then 'd3' (move to d3)."
+    puts "'save' => save and exit"
+    puts "'exit' => exit game without saving"
     puts 'Enjoy your game :)'
     sleep 1
   end
@@ -180,5 +180,5 @@ class Game
   end
 end
 
-test = Game.new
-test.play_game
+# test = Game.new
+# test.play_game

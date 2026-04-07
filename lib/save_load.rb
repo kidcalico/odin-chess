@@ -1,12 +1,27 @@
 module SaveLoad
   def save_game(board_array, game_stats)
     print 'Enter a name to save your file: '
-    keyword = gets.chomp
+    keyword = gets.chomp.downcase
     fen_code = board_to_fen(board_array, game_stats)
     yaml = YAML.dump(fen_code)
     file = File.new("#{keyword}.yaml", 'w')
     file.write(yaml)
     exit
+  end
+
+  def load_game
+    loop do
+      print 'Please enter the keyword you used to save: '
+      keyword = gets.chomp.downcase
+      if File.exist?("#{keyword}.yaml")
+        load = YAML.load_file("#{keyword}.yaml")
+        game = Game.new(load)
+        game.play_game
+        break
+      else
+        puts 'Please enter a valid keyword.'
+      end
+    end
   end
 
   def board_to_fen(board_array, game_stats)

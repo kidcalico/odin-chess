@@ -24,18 +24,22 @@ class Player
     loop do
       print "Where is the piece that you'd like to move? " if target == 'piece'
       print 'Where would you like to move? ' if target == 'move'
-      algebraic = gets.chomp
+      algebraic = gets.chomp.downcase
       break if input_valid?(algebraic)
 
       puts 'Invalid input, please try again...'
     end
     return algebraic if algebraic == 'save'
 
+    exit if algebraic == 'exit'
+
     algebraic_to_coord(algebraic)
   end
 
   def input_valid?(input)
-    return true if (input.length == 2 && input[0].match?(/[a-h]/i) && input[1].match?(/^[1-8]$/)) || input == 'save'
+    if (input.length == 2 && input[0].match?(/[a-h]/i) && input[1].match?(/^[1-8]$/)) || input == 'save' || input == 'exit'
+      return true
+    end
 
     false
   end
