@@ -28,6 +28,7 @@ class Game
     current_player = set_current_player
     until checkmate?(current_player, game_stats) || stalemate?(current_player, game_stats)
 
+      p board_to_fen(board.board, game_stats)
       half_turn(current_player)
       print "\e[2J\e[f"
       game_stats[:full_moves] += 1 if current_player.color == 'black'
@@ -80,6 +81,7 @@ class Game
       captured = board.make_move(piece, move, game_stats)
 
       unless check?(current_player.color, board.board, game_stats)
+        half_move_tracker(move, captured, board.board, game_stats)
         en_passant_tracker(piece, move, game_stats)
         castle_tracker(piece, move, game_stats)
         board_with_moves(board.board)

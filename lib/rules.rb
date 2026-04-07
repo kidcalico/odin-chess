@@ -18,6 +18,14 @@ module Rules
     end
   end
 
+  def half_move_tracker(move, captured, board_array, game_stats)
+    if board_array[move[0]][move[1]].type == 'pawn' || !captured.nil?
+      game_stats[:half_moves] = 0
+    else
+      game_stats[:half_moves] += 1
+    end
+  end
+
   def castle_stats(stats)
     { white: { king_side: stats[0], queen_side: stats[1] }, black: { king_side: stats[2], queen_side: stats[3] } }
   end
