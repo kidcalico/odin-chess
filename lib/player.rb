@@ -29,11 +29,13 @@ class Player
 
       puts 'Invalid input, please try again...'
     end
+    return algebraic if algebraic == 'save'
+
     algebraic_to_coord(algebraic)
   end
 
   def input_valid?(input)
-    return true if input.length == 2 && input[0].match?(/[a-h]/i) && input[1].match?(/^[1-8]$/)
+    return true if (input.length == 2 && input[0].match?(/[a-h]/i) && input[1].match?(/^[1-8]$/)) || input == 'save'
 
     false
   end
