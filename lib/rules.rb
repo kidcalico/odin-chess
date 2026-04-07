@@ -93,7 +93,8 @@ module Rules
   end
 
   def checkmate?(current_player, game_stats)
-    return true if check?(current_player.color, board.board, game_stats) && mate?(current_player, game_stats)
+    return true if check?(current_player.color, board.board,
+                          game_stats) && mate?(current_player, game_stats) && cannot_move?(current_player)
 
     false
   end
