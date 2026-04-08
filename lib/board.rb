@@ -68,9 +68,9 @@ class Board
   end
 
   def build_board(board_array)
-    board_array = board_array.map.with_index do |rank, r_index|
+    board_array.map.with_index do |rank, r_index|
       rank.map.with_index do |piece, s_index|
-        piece = Piece.new(piece, [r_index, s_index]) unless piece.nil?
+        Piece.new(piece, [r_index, s_index]) unless piece.nil?
       end
     end
   end
@@ -134,7 +134,7 @@ class Board
   end
 
   def array_print_ready(nested_array)
-    result = nested_array.map { |array| array.map { |char| char_to_piece(char) } }
+    nested_array.map { |array| array.map { |char| char_to_piece(char) } }
   end
 
   def char_to_piece(char)
