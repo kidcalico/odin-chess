@@ -9,26 +9,50 @@ module Steppable
                   -1
                 end
 
-    if rank > 0 && rank < 7
+    if in_bounds?(rank)
       result.push([rank + direction, file]) if board_array[rank + direction][file].nil?
-      if ((rank == 6 && opponent == 'black') || (rank == 1 && opponent == 'white')) && board_array[rank + direction][file].nil? && board_array[rank + (direction * 2)][file].nil?
+      if starting_position?(opponent,
+                            rank) && space_empty?(board_array, rank + direction,
+                                                  file) && space_empty?(board_array, rank + (direction * 2), file)
         result.push([rank + (direction * 2),
                      file])
       end
-      if file - 1 >= 0 && ((!board_array[rank + direction][file - 1].nil? && board_array[rank + direction][file - 1].color == opponent) || move_to_algebraic([
-                                                                                                                                                               (rank + direction), (file - 1)
-                                                                                                                                                             ]) == game_stats[:en_passant][:algebraic])
+      if in_bounds?(file - 1) && ((!space_empty?(board_array, rank + direction,
+                                                 file - 1) && enemy_piece?(board_array, opponent, rank + direction,
+                                                                           file - 1)) || en_passant?(rank + direction,
+                                                                                                     file - 1, game_stats))
         result.push([rank + direction,
                      file - 1])
       end
-      if file + 1 <= 7 && ((!board_array[rank + direction][file + 1].nil? && board_array[rank + direction][file + 1].color == opponent) || move_to_algebraic([
-                                                                                                                                                               (rank + direction), (file + 1)
-                                                                                                                                                             ]) == game_stats[:en_passant][:algebraic])
+      if in_bounds?(file + 1) && ((!space_empty?(board_array, rank + direction,
+                                                 file + 1) && enemy_piece?(board_array, opponent, rank + direction,
+                                                                           file + 1)) || en_passant?(rank + direction,
+                                                                                                     file + 1, game_stats))
         result.push([rank + direction,
                      file + 1])
       end
     end
     result
+  end
+
+  def in_bounds?(position)
+    position >= 0 && position <= 7
+  end
+
+  def starting_position?(opponent, rank)
+    (rank == 6 && opponent == 'black') || (rank == 1 && opponent == 'white')
+  end
+
+  def space_empty?(board_array, rank, file)
+    board_array[rank][file].nil?
+  end
+
+  def enemy_piece?(board_array, opponent, rank, file)
+    board_array[rank][file].color == opponent
+  end
+
+  def en_passant?(rank, file, game_stats)
+    move_to_algebraic([rank, file]) == game_stats[:en_passant][:algebraic]
   end
 
   def knight_moves(location, board_array, opponent)
