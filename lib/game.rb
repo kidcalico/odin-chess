@@ -29,7 +29,6 @@ class Game
     until checkmate?(current_player, game_stats) || stalemate?(current_player, game_stats)
 
       half_turn(current_player)
-      # print "\e[2J\e[f"
       game_stats[:full_moves] += 1 if current_player.color == 'black'
 
       current_player = set_current_player
@@ -46,7 +45,6 @@ class Game
   def half_turn(current_player)
     turn_prompt(current_player)
     notify_check(current_player.color) if check?(current_player.color, board.board, game_stats)
-    sleep 0.3
     choose_and_move(current_player)
     sleep 1
     game_stats[:turn] = current_player.opponent
