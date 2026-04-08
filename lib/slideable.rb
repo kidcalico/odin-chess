@@ -33,11 +33,13 @@ module Slideable
           break
         end
 
-        if board_array[rank + r_direction][file + f_direction].nil? || board_array[rank + r_direction][file + f_direction].color == opponent
+        if space_empty?(board_array, rank + r_direction,
+                        file + f_direction) || enemy_piece?(board_array, opponent, rank + r_direction,
+                                                            file + f_direction)
           result << [rank + r_direction,
                      file + f_direction]
         end
-        break unless board_array[rank + r_direction][file + f_direction].nil?
+        break unless space_empty?(board_array, rank + r_direction, file + f_direction)
 
         r_direction += direction[0]
         f_direction += direction[1]
