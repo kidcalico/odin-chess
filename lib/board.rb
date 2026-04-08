@@ -35,6 +35,15 @@ class Board
     captured
   end
 
+  def reset_move(piece, move, captured)
+    board[piece[0]][piece[1]] = board[move[0]][move[1]]
+    board[piece[0]][piece[1]].location = piece
+    board[move[0]][move[1]] = captured
+    return if captured.nil?
+
+    board[move[0]][move[1]].location = move
+  end
+
   def convert_pawn(location, color)
     loop do
       print 'Convert to queen [q], rook [r], bishop [b] or knight [k]? '
@@ -56,15 +65,6 @@ class Board
     when [7, 2] then make_move([7, 0], [7, 3], game_stats)
     when [7, 6] then make_move([7, 7], [7, 5], game_stats)
     end
-  end
-
-  def reset_move(piece, move, captured)
-    board[piece[0]][piece[1]] = board[move[0]][move[1]]
-    board[piece[0]][piece[1]].location = piece
-    board[move[0]][move[1]] = captured
-    return if captured.nil?
-
-    board[move[0]][move[1]].location = move
   end
 
   def build_board(board_array)
