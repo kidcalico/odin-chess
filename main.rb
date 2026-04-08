@@ -7,9 +7,7 @@ include SaveLoad
 print "\e[2J\e[f"
 puts 'Welcome to Chess in the Command Line, coded by Kid Calico using Ruby.'
 puts 'Please select from the following options:'
-puts '[N]ew game'
-puts '[L]oad a saved game'
-puts 'Enter [F]EN (Forsyth Edwards Notation - please ensure it is accurate and complete).'
+puts '[N]ew game / [L]oad a saved game / [F]EN'
 game = Game.new
 loop do
   print "Please type 'N', 'L' or 'F': "

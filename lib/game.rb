@@ -28,7 +28,6 @@ class Game
     current_player = set_current_player
     until checkmate?(current_player, game_stats) || stalemate?(current_player, game_stats)
 
-      # puts "Current FEN code: \n'#{board_to_fen(board.board, game_stats)}'"
       half_turn(current_player)
       # print "\e[2J\e[f"
       game_stats[:full_moves] += 1 if current_player.color == 'black'
@@ -71,20 +70,14 @@ class Game
       possible = possible_moves(piece, board.board, current_player.opponent, game_stats)
       board.display_moves(current_player.color, possible)
 
-      if possible == []
-        puts "You cannot move that #{board.board[piece[0]][piece[1]].type}."
-        next
-      end
+      next puts "That #{board.board[piece[0]][piece[1]].type} cannot move." if possible == []
 
       move = select_move(current_player, possible)
 
       captured = board.make_move(piece, move, game_stats)
 
       unless check?(current_player.color, board.board, game_stats)
-        half_move_tracker(move, captured, board.board, game_stats)
-        en_passant_tracker(piece, move, game_stats)
-        castle_tracker(piece, move, game_stats)
-        board_with_moves(board.board)
+        update_stats(piece, move, captured)
         break
       end
 
@@ -101,17 +94,22 @@ class Game
     current_player.captured.push(captured)
   end
 
+  def update_stats(piece, move, captured)
+    half_move_tracker(move, captured, board.board, game_stats)
+    en_passant_tracker(piece, move, game_stats)
+    castle_tracker(piece, move, game_stats)
+    board_with_moves(board.board)
+  end
+
   def select_piece(current_player)
     loop do
       piece = current_player.get_input('piece')
       next puts "Current FEN code: \n'#{board_to_fen(board.board, game_stats)}'" if piece == 'fen'
 
       save_game(board.board, game_stats) if piece == 'save'
-      next puts "That #{board.board[piece[0]][piece[1]].type} has no possible moves." if possible_moves(piece,
-                                                                                                        board.board, current_player.opponent, game_stats).compact == []
-      unless board.board[piece[0]][piece[1]].nil? || board.board[piece[0]][piece[1]].color != current_player.color
-        return piece
-      end
+      return piece unless space_empty?(board.board, piece[0],
+                                       piece[1]) || enemy_piece?(board.board, current_player.opponent, piece[0],
+                                                                 piece[1])
 
       puts "Please select a #{current_player.color} piece."
     end
@@ -158,7 +156,6 @@ class Game
 
   def start_game
     print "\e[2J\e[f"
-    # puts 'Welcome to Chess in the Terminal, coded in Ruby.'
     puts 'Game to be played using algebraic coordinates:'
     puts 'Enter your moves using a letter (a-h) followed by a number (1-8).'
     puts "For example: 'd2' (to select piece), then 'd3' (move to d3)."
