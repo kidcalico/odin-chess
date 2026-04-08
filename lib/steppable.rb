@@ -35,22 +35,6 @@ module Steppable
     result
   end
 
-  def in_bounds?(position)
-    position >= 0 && position <= 7
-  end
-
-  def starting_position?(opponent, rank)
-    (rank == 6 && opponent == 'black') || (rank == 1 && opponent == 'white')
-  end
-
-  def space_empty?(board_array, rank, file)
-    board_array[rank][file].nil?
-  end
-
-  def enemy_piece?(board_array, opponent, rank, file)
-    board_array[rank][file].color == opponent
-  end
-
   def en_passant?(rank, file, game_stats)
     move_to_algebraic([rank, file]) == game_stats[:en_passant][:algebraic]
   end

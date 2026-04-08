@@ -18,6 +18,22 @@ module Rules
     end
   end
 
+  def in_bounds?(position)
+    position >= 0 && position <= 7
+  end
+
+  def starting_position?(opponent, rank)
+    (rank == 6 && opponent == 'black') || (rank == 1 && opponent == 'white')
+  end
+
+  def space_empty?(board_array, rank, file)
+    board_array[rank][file].nil?
+  end
+
+  def enemy_piece?(board_array, opponent, rank, file)
+    board_array[rank][file].color == opponent
+  end
+
   def half_move_tracker(move, captured, board_array, game_stats)
     if board_array[move[0]][move[1]].type == 'pawn' || !captured.nil?
       game_stats[:half_moves] = 0
