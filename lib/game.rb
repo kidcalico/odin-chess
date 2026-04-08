@@ -28,9 +28,9 @@ class Game
     current_player = set_current_player
     until checkmate?(current_player, game_stats) || stalemate?(current_player, game_stats)
 
-      p board_to_fen(board.board, game_stats)
+      # puts "Current FEN code: \n'#{board_to_fen(board.board, game_stats)}'"
       half_turn(current_player)
-      print "\e[2J\e[f"
+      # print "\e[2J\e[f"
       game_stats[:full_moves] += 1 if current_player.color == 'black'
 
       current_player = set_current_player
@@ -67,7 +67,7 @@ class Game
     captured = nil
     loop do
       piece = select_piece(current_player)
-      save_game(board.board, game_stats) if piece == 'save'
+
       possible = possible_moves(piece, board.board, current_player.opponent, game_stats)
       board.display_moves(current_player.color, possible)
 
@@ -104,7 +104,11 @@ class Game
   def select_piece(current_player)
     loop do
       piece = current_player.get_input('piece')
-      return piece if piece == 'save'
+      next puts "Current FEN code: \n'#{board_to_fen(board.board, game_stats)}'" if piece == 'fen'
+
+      save_game(board.board, game_stats) if piece == 'save'
+      next puts "That #{board.board[piece[0]][piece[1]].type} has no possible moves." if possible_moves(piece,
+                                                                                                        board.board, current_player.opponent, game_stats).compact == []
       unless board.board[piece[0]][piece[1]].nil? || board.board[piece[0]][piece[1]].color != current_player.color
         return piece
       end
@@ -116,6 +120,9 @@ class Game
   def select_move(current_player, possible)
     loop do
       move = current_player.get_input('move')
+      next puts "Current FEN code: \n'#{board_to_fen(board.board, game_stats)}'" if move == 'fen'
+
+      save_game(board.board, game_stats) if move == 'save'
       return move if possible.include?(move)
 
       puts 'You cannot move there, please select from the given options.'
@@ -151,12 +158,12 @@ class Game
 
   def start_game
     print "\e[2J\e[f"
-    puts 'Welcome to Chess in the Terminal, coded in Ruby.'
+    # puts 'Welcome to Chess in the Terminal, coded in Ruby.'
     puts 'Game to be played using algebraic coordinates:'
     puts 'Enter your moves using a letter (a-h) followed by a number (1-8).'
     puts "For example: 'd2' (to select piece), then 'd3' (move to d3)."
-    puts "'save' => save and exit"
-    puts "'exit' => exit game without saving"
+    puts "'save' --> save and exit"
+    puts "'exit' --> exit game without saving"
     puts 'Enjoy your game :)'
     sleep 1
   end
@@ -181,6 +188,3 @@ class Game
     end
   end
 end
-
-# test = Game.new
-# test.play_game
