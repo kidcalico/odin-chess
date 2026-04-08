@@ -47,10 +47,10 @@ class Player
 
   def algebraic_to_coord(algebraic)
     split = algebraic.split('')
-    coord = [(8 - split[1].to_i), (split[0].downcase.ord - 97)]
+    [(8 - split[1].to_i), (split[0].downcase.ord - 97)]
   end
 
   def which_piece(coord, board_array)
-    piece = board_array[coord[0]][coord[1]]
+    board_array[coord[0]][coord[1]]
   end
 end
