@@ -110,7 +110,7 @@ module Rules
 
   def checkmate?(current_player, game_stats)
     return true if check?(current_player.color, board.board,
-                          game_stats) && mate?(current_player, game_stats) && cannot_move?(current_player)
+                          game_stats) && mate?(current_player, game_stats) && cannot_evade?(current_player, game_stats)
 
     false
   end
@@ -125,6 +125,19 @@ module Rules
     current_pieces = board.board.flatten.filter_map { |piece| piece if piece && piece.color == current_player.color }
     current_pieces.reject! { |piece| piece.type == 'king' }
     current_pieces.all? { |piece| piece.possible == [] }
+  end
+
+  def cannot_evade?(current_player, game_stats)
+    current_pieces = board.board.flatten.filter_map { |piece| piece if piece && piece.color == current_player.color }
+    current_pieces.reject! { |piece| piece.type == 'king' }
+    current_pieces.any? do |piece|
+      piece.possible.any? do |possible|
+        captured = board.make_move(piece.location, possible, game_stats)
+        boolean = check?(current_player.color, board.board, game_stats)
+        board.reset_move(piece, location, captured)
+        boolean
+      end
+    end
   end
 
   def mate?(current_player, game_stats)
