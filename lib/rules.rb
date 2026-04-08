@@ -137,12 +137,13 @@ module Rules
   def cannot_evade?(current_player, game_stats)
     current_pieces = board.board.flatten.filter_map { |piece| piece if piece && piece.color == current_player.color }
     current_pieces.reject! { |piece| piece.type == 'king' }
-    current_pieces.any? do |piece|
+    current_pieces.none? do |piece|
+      location = piece.location
       piece.possible.any? do |possible|
-        captured = board.make_move(piece.location, possible, game_stats)
+        captured = board.make_move(location, possible, game_stats)
         boolean = check?(current_player.color, board.board, game_stats)
-        board.reset_move(piece, location, captured)
-        boolean
+        board.reset_move(location, possible, captured)
+        !boolean
       end
     end
   end
