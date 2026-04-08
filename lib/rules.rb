@@ -43,7 +43,14 @@ module Rules
   end
 
   def castle_stats(stats)
-    { white: { king_side: stats[0], queen_side: stats[1] }, black: { king_side: stats[2], queen_side: stats[3] } }
+    result = { white: { king_side: nil, queen_side: nil },
+               black: { king_side: nil, queen_side: nil } }
+
+    result[:white][:king_side] = 'K' if stats.include?('K')
+    result[:white][:queen_side] = 'Q' if stats.include?('Q')
+    result[:black][:king_side] = 'k' if stats.include?('k')
+    result[:black][:queen_side] = 'q' if stats.include?('q')
+    result
   end
 
   def castle_tracker(origin, move, game_stats)
