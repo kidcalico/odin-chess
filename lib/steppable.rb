@@ -57,11 +57,12 @@ module Steppable
 
   def knight_moves(location, board_array, opponent)
     basic_moves = [[1, 2], [-1, 2], [1, -2], [-1, -2], [2, 1], [2, -1], [-2, 1], [-2, -1]]
-    moves = basic_moves.map do |move|
+    basic_moves.map do |move|
       possible_move = move.map.with_index { |coordinate, index| coordinate + location[index] }
-      next if (possible_move[0] < 0 || possible_move[0] > 7) || (possible_move[1] < 0 || possible_move[1] > 7)
-      next unless board_array[possible_move[0]][possible_move[1]].nil? ||
-                  board_array[possible_move[0]][possible_move[1]].color == opponent
+      next unless in_bounds?(possible_move[0]) && in_bounds?(possible_move[1])
+      next unless space_empty?(board_array, possible_move[0],
+                               possible_move[1]) || enemy_piece?(board_array, opponent, possible_move[0],
+                                                                 possible_move[1])
 
       possible_move
     end.compact
@@ -76,9 +77,10 @@ module Steppable
       r_direction = direction[0]
       f_direction = direction[1]
 
-      next if [rank + r_direction, file + f_direction].any? { |coordinate| coordinate < 0 || coordinate > 7 }
+      next unless [rank + r_direction, file + f_direction].all? { |coordinate| in_bounds?(coordinate) }
 
-      if board_array[rank + r_direction][file + f_direction].nil? || board_array[rank + r_direction][file + f_direction].color == opponent
+      if space_empty?(board_array, rank + r_direction,
+                      file + f_direction) || enemy_piece?(board_array, opponent, rank + r_direction, file + f_direction)
         [rank + r_direction, file + f_direction]
       end
     end
