@@ -67,13 +67,11 @@ module Steppable
                       file + f_direction) || enemy_piece?(board_array, opponent, rank + r_direction, file + f_direction)
         [rank + r_direction, file + f_direction]
       end
-    end
+    end.compact
 
     castle = king_castle(opponent, board_array, game_stats)
 
-    directions += castle unless castle.nil?
-
-    directions
+    directions += castle
   end
 
   def king_castle(opponent, board_array, game_stats)
@@ -87,12 +85,13 @@ module Steppable
       rank = 0
     end
 
-    if !game_stats[:castle][player][:king_side].nil? && board_array[rank][5].nil? &&
-       board_array[rank][6].nil? && !check_square?([rank, 5], board_array, player.to_s)
+    if !game_stats[:castle][player][:king_side].nil? && space_empty?(board_array, rank, 5) &&
+       space_empty?(board_array, rank, 6) && !check_square?([rank, 5], board_array, player.to_s)
       result << [rank, 6]
     end
-    if !game_stats[:castle][player][:queen_side].nil? && board_array[rank][3].nil? &&
-       board_array[rank][2].nil? && board_array[rank][1].nil? && !check_square?([rank, 3], board_array, player.to_s)
+    if !game_stats[:castle][player][:queen_side].nil? && space_empty?(board_array, rank, 3) &&
+       space_empty?(board_array, rank,
+                    2) && space_empty?(board_array, rank, 1) && !check_square?([rank, 3], board_array, player.to_s)
       result << [rank, 2]
     end
     result
