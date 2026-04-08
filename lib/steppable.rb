@@ -71,7 +71,7 @@ module Steppable
 
     castle = king_castle(opponent, board_array, game_stats)
 
-    directions += castle
+    directions + castle
   end
 
   def king_castle(opponent, board_array, game_stats)
