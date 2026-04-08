@@ -29,7 +29,7 @@ class Player
 
       puts 'Invalid input, please try again...'
     end
-    return algebraic if algebraic == 'save'
+    return algebraic if %w[save fen].include?(algebraic)
 
     exit if algebraic == 'exit'
 
@@ -37,7 +37,8 @@ class Player
   end
 
   def input_valid?(input)
-    if (input.length == 2 && input[0].match?(/[a-h]/i) && input[1].match?(/^[1-8]$/)) || input == 'save' || input == 'exit'
+    commands = %w[save exit fen]
+    if (input.length == 2 && input[0].match?(/[a-h]/i) && input[1].match?(/^[1-8]$/)) || commands.include?(input)
       return true
     end
 
